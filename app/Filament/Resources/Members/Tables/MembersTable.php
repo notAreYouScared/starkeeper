@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Members\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -15,6 +16,12 @@ class MembersTable
     {
         return $table
             ->columns([
+                ImageColumn::make('avatar_url')
+                    ->label('Avatar')
+                    ->circular()
+                    ->defaultImageUrl(null)
+                    ->size(36),
+
                 TextColumn::make('handle')
                     ->label('RSI Handle')
                     ->searchable()
@@ -30,22 +37,26 @@ class MembersTable
                     ->placeholder('—')
                     ->searchable(),
 
-                TextColumn::make('org_role')
+                TextColumn::make('orgRole.label')
                     ->label('Org Role')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'leadership' => 'warning',
-                        default      => 'gray',
+                    ->color(fn (?string $state): string => match ($state) {
+                        'Leadership' => 'warning',
+                        'Director' => 'info',
+                        'Mod' => 'success',
+                        default => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => ucfirst($state)),
+                    ->sortable(),
+
+                TextColumn::make('sort_order')
+                    ->label('Order')
+                    ->sortable(),
             ])
+            ->defaultSort('sort_order')
             ->filters([
-                SelectFilter::make('org_role')
+                SelectFilter::make('org_role_id')
                     ->label('Organisation Role')
-                    ->options([
-                        'leadership' => 'Leadership',
-                        'member'     => 'Member',
-                    ]),
+                    ->relationship('orgRole', 'label'),
             ])
             ->recordActions([
                 EditAction::make(),

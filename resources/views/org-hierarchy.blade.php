@@ -28,12 +28,12 @@
             @auth
                 <a href="{{ route('filament.admin.pages.dashboard') }}"
                    class="text-xs text-blue-400 hover:text-blue-300 transition-colors">
-                    Admin Panel →
+                     Admin Panel →
                 </a>
             @else
                 <a href="{{ route('filament.admin.auth.login') }}"
                    class="text-xs text-blue-400 hover:text-blue-300 transition-colors">
-                    Sign in →
+                     Sign in →
                 </a>
             @endauth
         </div>
@@ -41,38 +41,57 @@
 
     <main class="mx-auto max-w-5xl px-4 py-10 space-y-10">
 
-        {{-- ─────────────────────── LEADERSHIP ─────────────────────── --}}
-        <section>
-            <div class="flex items-center gap-3 mb-4">
-                <div class="h-8 w-1 rounded bg-yellow-400"></div>
-                <h2 class="text-xl font-bold tracking-widest uppercase text-yellow-400">
-                    Leadership
-                </h2>
-            </div>
+        {{-- ─────────────────────── ORG ROLES ─────────────────────── --}}
+        @php
+            $roleAccents = [
+                'leadership' => ['bar' => 'bg-yellow-400', 'text' => 'text-yellow-400', 'border' => 'border-yellow-400/30', 'bg' => 'bg-yellow-400/5', 'avatar' => 'bg-yellow-400/20 text-yellow-400'],
+                'director'   => ['bar' => 'bg-blue-400',   'text' => 'text-blue-400',   'border' => 'border-blue-400/30',   'bg' => 'bg-blue-400/5',   'avatar' => 'bg-blue-400/20 text-blue-400'],
+                'mod'        => ['bar' => 'bg-green-400',  'text' => 'text-green-400',  'border' => 'border-green-400/30',  'bg' => 'bg-green-400/5',  'avatar' => 'bg-green-400/20 text-green-400'],
+            ];
+            $defaultAccent = ['bar' => 'bg-gray-400', 'text' => 'text-gray-300', 'border' => 'border-white/10', 'bg' => 'bg-white/5', 'avatar' => 'bg-gray-600 text-gray-300'];
+        @endphp
 
-            @if($leaders->isEmpty())
-                <p class="text-sm text-gray-400 italic pl-4">No leadership members assigned yet.</p>
-            @else
+        @foreach($membersByRole as $group)
+            @php $accent = $roleAccents[$group['role']->name] ?? $defaultAccent @endphp
+            <section>
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="h-8 w-1 rounded {{ $accent['bar'] }}"></div>
+                    <h2 class="text-xl font-bold tracking-widest uppercase {{ $accent['text'] }}">
+                        {{ $group['role']->label }}
+                    </h2>
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pl-4">
-                    @foreach($leaders as $leader)
-                        <div class="flex items-center gap-3 rounded-xl border border-yellow-400/30 bg-yellow-400/5 px-4 py-3 shadow-sm">
-                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-yellow-400/20 text-yellow-400 font-bold text-sm">
-                                {{ strtoupper(substr($leader->name, 0, 2)) }}
-                            </div>
+                    @foreach($group['members'] as $member)
+                        <div class="flex items-center gap-3 rounded-xl border {{ $accent['border'] }} {{ $accent['bg'] }} px-4 py-3 shadow-sm">
+                            @if($member->avatar_url)
+                                <img src="{{ $member->avatar_url }}"
+                                     alt="{{ $member->name }}"
+                                     class="h-10 w-10 shrink-0 rounded-full object-cover">
+                            @else
+                                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full {{ $accent['avatar'] }} font-bold text-sm">
+                                    {{ strtoupper(substr($member->name, 0, 2)) }}
+                                </div>
+                            @endif
                             <div class="min-w-0">
-                                <p class="font-semibold text-white truncate">{{ $leader->name }}</p>
-                                <p class="text-xs text-gray-400 truncate">{{ $leader->handle }}</p>
-                                @if($leader->title)
-                                    <span class="mt-1 inline-block text-xs font-medium text-yellow-300 bg-yellow-900/30 px-2 py-0.5 rounded">
-                                        {{ $leader->title }}
+                                @if($member->profile_url)
+                                    <a href="{{ $member->profile_url }}" target="_blank" rel="noopener noreferrer"
+                                       class="font-semibold text-white truncate hover:underline">{{ $member->name }}</a>
+                                @else
+                                    <p class="font-semibold text-white truncate">{{ $member->name }}</p>
+                                @endif
+                                <p class="text-xs text-gray-400 truncate">{{ $member->handle }}</p>
+                                @if($member->title)
+                                    <span class="mt-1 inline-block text-xs font-medium {{ $accent['text'] }} bg-white/5 px-2 py-0.5 rounded">
+                                        {{ $member->title }}
                                     </span>
                                 @endif
                             </div>
                         </div>
                     @endforeach
                 </div>
-            @endif
-        </section>
+            </section>
+        @endforeach
 
         {{-- ─────────────────────── UNITS ─────────────────────── --}}
         @php
@@ -138,9 +157,15 @@
                                                 <div class="flex flex-wrap gap-2">
                                                     @foreach($teamLeaders as $tm)
                                                         <div class="flex items-center gap-2 rounded-lg border {{ $s['border'] }} {{ $s['bg'] }} px-3 py-1.5">
-                                                            <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full {{ $s['avatarBg'] }} {{ $s['text'] }} text-xs font-bold">
-                                                                {{ strtoupper(substr($tm->member->name, 0, 2)) }}
-                                                            </div>
+                                                            @if($tm->member->avatar_url)
+                                                                <img src="{{ $tm->member->avatar_url }}"
+                                                                     alt="{{ $tm->member->name }}"
+                                                                     class="h-6 w-6 shrink-0 rounded-full object-cover">
+                                                            @else
+                                                                <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full {{ $s['avatarBg'] }} {{ $s['text'] }} text-xs font-bold">
+                                                                    {{ strtoupper(substr($tm->member->name, 0, 2)) }}
+                                                                </div>
+                                                            @endif
                                                             <div>
                                                                 <span class="text-sm font-medium text-white">{{ $tm->member->name }}</span>
                                                                 @if($tm->title)
@@ -159,9 +184,15 @@
                                                 <div class="flex flex-wrap gap-2">
                                                     @foreach($teamRegulars as $tm)
                                                         <div class="flex items-center gap-2 rounded-lg bg-gray-700/50 border border-white/10 px-3 py-1.5">
-                                                            <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-600 text-gray-300 text-xs font-bold">
-                                                                {{ strtoupper(substr($tm->member->name, 0, 2)) }}
-                                                            </div>
+                                                            @if($tm->member->avatar_url)
+                                                                <img src="{{ $tm->member->avatar_url }}"
+                                                                     alt="{{ $tm->member->name }}"
+                                                                     class="h-6 w-6 shrink-0 rounded-full object-cover">
+                                                            @else
+                                                                <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-600 text-gray-300 text-xs font-bold">
+                                                                    {{ strtoupper(substr($tm->member->name, 0, 2)) }}
+                                                                </div>
+                                                            @endif
                                                             <div>
                                                                 <span class="text-sm text-white">{{ $tm->member->name }}</span>
                                                                 @if($tm->title)
@@ -186,3 +217,4 @@
 
 </body>
 </html>
+

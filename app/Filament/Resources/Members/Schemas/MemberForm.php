@@ -23,19 +23,34 @@ class MemberForm
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
 
+                TextInput::make('avatar_url')
+                    ->label('Profile Picture URL')
+                    ->url()
+                    ->placeholder('https://...')
+                    ->maxLength(2048),
+
+                TextInput::make('profile_url')
+                    ->label('Profile URL')
+                    ->url()
+                    ->placeholder('https://robertsspaceindustries.com/citizens/...')
+                    ->maxLength(2048),
+
                 TextInput::make('title')
                     ->label('Title')
                     ->placeholder('e.g. Grand Admiral, Fleet Commander')
                     ->maxLength(255),
 
-                Select::make('org_role')
+                Select::make('org_role_id')
                     ->label('Organisation Role')
-                    ->options([
-                        'leadership' => 'Leadership',
-                        'member'     => 'Member',
-                    ])
-                    ->default('member')
+                    ->relationship('orgRole', 'label', fn ($query) => $query->orderBy('sort_order'))
+                    ->default(fn () => \App\Models\OrgRole::where('name', 'member')->value('id'))
                     ->required(),
+
+                TextInput::make('sort_order')
+                    ->label('Sort Order')
+                    ->numeric()
+                    ->default(0)
+                    ->helperText('Lower numbers appear first in the org hierarchy.'),
             ]);
     }
 }
