@@ -80,7 +80,6 @@
                                 @else
                                     <p class="font-semibold text-white truncate">{{ $member->name }}</p>
                                 @endif
-                                <p class="text-xs text-gray-400 truncate">{{ $member->handle }}</p>
                                 @if($member->title)
                                     <span class="mt-1 inline-block text-xs font-medium {{ $accent['text'] }} bg-white/5 px-2 py-0.5 rounded">
                                         {{ $member->title }}
@@ -97,8 +96,8 @@
         @php
             $unitStyles = [
                 'Security' => ['border' => 'border-red-500/40',   'bg' => 'bg-red-500/5',   'accent' => 'bg-red-500',   'text' => 'text-red-400',   'badge' => 'bg-red-900/30 text-red-300',   'avatarBg' => 'bg-red-500/20'],
-                'Industry' => ['border' => 'border-amber-500/40', 'bg' => 'bg-amber-500/5', 'accent' => 'bg-amber-500', 'text' => 'text-amber-400', 'badge' => 'bg-amber-900/30 text-amber-300', 'avatarBg' => 'bg-amber-500/20'],
-                'Racing'   => ['border' => 'border-green-500/40', 'bg' => 'bg-green-500/5', 'accent' => 'bg-green-500', 'text' => 'text-green-400', 'badge' => 'bg-green-900/30 text-green-300', 'avatarBg' => 'bg-green-500/20'],
+                'Industry' => ['border' => 'border-green-500/40', 'bg' => 'bg-green-500/5', 'accent' => 'bg-green-500', 'text' => 'text-green-400', 'badge' => 'bg-green-900/30 text-green-300', 'avatarBg' => 'bg-green-500/20'],
+                'Racing'   => ['border' => 'border-blue-500/40', 'bg' => 'bg-blue-500/5', 'accent' => 'bg-blue-500', 'text' => 'text-blue-400', 'badge' => 'bg-blue-900/30 text-blue-300', 'avatarBg' => 'bg-blue-500/20'],
             ];
         @endphp
 
