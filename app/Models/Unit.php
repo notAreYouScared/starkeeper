@@ -14,6 +14,6 @@ class Unit extends Model
 
     public function teams(): HasMany
     {
-        return $this->hasMany(Team::class);
+        return $this->hasMany(Team::class)->orderBy('sort_order');
     }
 }
