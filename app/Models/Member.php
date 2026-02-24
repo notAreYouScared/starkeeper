@@ -12,7 +12,7 @@ class Member extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'handle', 'avatar_url', 'profile_url', 'title', 'org_role_id', 'sort_order'];
+    protected $fillable = ['discord_id', 'name', 'handle', 'avatar_url', 'profile_url', 'title', 'org_role_id', 'sort_order'];
 
     public function orgRole(): BelongsTo
     {
