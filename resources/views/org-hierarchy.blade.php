@@ -143,7 +143,6 @@
                                                             </div>
                                                             <div>
                                                                 <span class="text-sm font-medium text-white">{{ $tm->member->name }}</span>
-                                                                <span class="text-xs text-gray-400 ml-1">{{ $tm->member->handle }}</span>
                                                                 @if($tm->title)
                                                                     <span class="ml-1 text-xs font-medium {{ $s['badge'] }} px-1.5 py-0.5 rounded">{{ $tm->title }}</span>
                                                                 @endif
@@ -165,7 +164,6 @@
                                                             </div>
                                                             <div>
                                                                 <span class="text-sm text-white">{{ $tm->member->name }}</span>
-                                                                <span class="text-xs text-gray-400 ml-1">{{ $tm->member->handle }}</span>
                                                                 @if($tm->title)
                                                                     <span class="ml-1 text-xs text-gray-400 italic">{{ $tm->title }}</span>
                                                                 @endif
