@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Teams\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -15,14 +16,20 @@ class TeamsTable
     {
         return $table
             ->columns([
+                ImageColumn::make('image')
+                    ->label('Patch')
+                    ->disk('public')
+                    ->size(40)
+                    ->defaultImageUrl(null),
+
                 TextColumn::make('unit.name')
                     ->label('Unit')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Security' => 'danger',
                         'Industry' => 'warning',
-                        'Racing'   => 'success',
-                        default    => 'gray',
+                        'Racing' => 'success',
+                        default => 'gray',
                     })
                     ->sortable(),
 

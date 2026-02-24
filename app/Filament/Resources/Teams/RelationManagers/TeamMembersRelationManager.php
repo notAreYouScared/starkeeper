@@ -2,13 +2,10 @@
 
 namespace App\Filament\Resources\Teams\RelationManagers;
 
-use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\DetachAction;
-use Filament\Actions\DetachBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -47,6 +44,12 @@ class TeamMembersRelationManager extends RelationManager
                     ->label('Title')
                     ->placeholder('e.g. Wing Commander, Mining Specialist')
                     ->maxLength(255),
+
+                TextInput::make('sort_order')
+                    ->label('Sort Order')
+                    ->numeric()
+                    ->default(0)
+                    ->helperText('Lower numbers appear first within the team.'),
             ]);
     }
 
@@ -68,17 +71,22 @@ class TeamMembersRelationManager extends RelationManager
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'leader' => 'warning',
-                        default  => 'gray',
+                        default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'leader' => 'Team Leader',
-                        default  => 'Team Member',
+                        default => 'Team Member',
                     }),
 
                 TextColumn::make('title')
                     ->label('Title')
                     ->placeholder('—'),
+
+                TextColumn::make('sort_order')
+                    ->label('Order')
+                    ->sortable(),
             ])
+            ->defaultSort('sort_order')
             ->headerActions([
                 CreateAction::make(),
             ])

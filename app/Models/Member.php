@@ -4,14 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Member extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'handle', 'title', 'org_role'];
+    protected $fillable = ['name', 'handle', 'avatar_url', 'profile_url', 'title', 'org_role_id', 'sort_order'];
+
+    public function orgRole(): BelongsTo
+    {
+        return $this->belongsTo(OrgRole::class);
+    }
 
     public function teamMembers(): HasMany
     {
@@ -21,7 +27,7 @@ class Member extends Model
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'team_members')
-            ->withPivot(['role', 'title'])
+            ->withPivot(['role', 'title', 'sort_order'])
             ->withTimestamps();
     }
 }

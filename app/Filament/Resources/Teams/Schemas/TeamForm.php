@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Teams\Schemas;
 
-use App\Models\Unit;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -30,6 +30,14 @@ class TeamForm
                     ->label('Description')
                     ->rows(3)
                     ->maxLength(1000),
+
+                FileUpload::make('image')
+                    ->label('Team Patch / Image')
+                    ->image()
+                    ->disk('public')
+                    ->directory('team-images')
+                    ->imagePreviewHeight('80')
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']),
             ]);
     }
 }
