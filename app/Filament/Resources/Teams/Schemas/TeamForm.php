@@ -38,6 +38,12 @@ class TeamForm
                     ->directory('team-images')
                     ->imagePreviewHeight('80')
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']),
+
+                TextInput::make('sort_order')
+                    ->label('Sort Order')
+                    ->numeric()
+                    ->default(0)
+                    ->helperText('Lower numbers appear first.'),
             ]);
     }
 }

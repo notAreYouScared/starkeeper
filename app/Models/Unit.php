@@ -10,10 +10,10 @@ class Unit extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['name', 'description', 'sort_order'];
 
     public function teams(): HasMany
     {
-        return $this->hasMany(Team::class);
+        return $this->hasMany(Team::class)->orderBy('sort_order');
     }
 }

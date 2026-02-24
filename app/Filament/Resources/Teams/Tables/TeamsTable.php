@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
@@ -47,7 +48,13 @@ class TeamsTable
                     ->label('Members')
                     ->counts('teamMembers')
                     ->sortable(),
+
+                TextInputColumn::make('sort_order')
+                    ->label('Display Order')
+                    ->width(5)
+                    ->sortable(),
             ])
+            ->defaultSort('sort_order')
             ->filters([
                 SelectFilter::make('unit')
                     ->relationship('unit', 'name')
