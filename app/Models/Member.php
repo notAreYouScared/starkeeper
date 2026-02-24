@@ -27,7 +27,7 @@ class Member extends Model
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'team_members')
-            ->withPivot(['role', 'title', 'sort_order'])
+            ->withPivot(['team_role_id', 'title', 'sort_order'])
             ->withTimestamps();
     }
 }
