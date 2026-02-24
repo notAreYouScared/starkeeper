@@ -5,6 +5,7 @@ namespace App\Models;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -36,6 +37,11 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
+    public function member(): HasOne
+    {
+        return $this->hasOne(Member::class, 'discord_id', 'discord_id');
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         try {
@@ -48,7 +54,9 @@ class User extends Authenticatable implements FilamentUser
             return $this->is_admin;
         }
 
-        // member panel (or any other panel) — all authenticated users may access
-        return true;
+        // member panel — only users with a linked Member record and a valid org role
+        $this->loadMissing('member');
+
+        return $this->member?->org_role_id !== null;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Member;
+use App\Models\OrgRole;
 use App\Models\User;
 use Filament\Panel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -61,5 +63,55 @@ class UserAdminAccessTest extends TestCase
         ]);
 
         $this->assertFalse($user->canAccessPanel(Panel::make('admin')));
+    }
+
+    public function test_user_with_valid_org_role_can_access_member_panel(): void
+    {
+        $orgRole = OrgRole::create(['name' => 'member', 'label' => 'Member', 'sort_order' => 1]);
+
+        $user = User::factory()->create(['discord_id' => 'discord_abc']);
+        Member::create([
+            'discord_id'  => 'discord_abc',
+            'name'        => 'Test Member',
+            'handle'      => 'testmember',
+            'org_role_id' => $orgRole->id,
+        ]);
+
+        $panel = Panel::make()->id('member');
+
+        $this->assertTrue($user->canAccessPanel($panel));
+    }
+
+    public function test_user_without_org_role_cannot_access_member_panel(): void
+    {
+        $user = User::factory()->create(['discord_id' => 'discord_def']);
+        Member::create([
+            'discord_id'  => 'discord_def',
+            'name'        => 'No Role',
+            'handle'      => 'norole',
+            'org_role_id' => null,
+        ]);
+
+        $panel = Panel::make()->id('member');
+
+        $this->assertFalse($user->canAccessPanel($panel));
+    }
+
+    public function test_user_with_no_member_record_cannot_access_member_panel(): void
+    {
+        $user = User::factory()->create(['discord_id' => 'discord_ghi']);
+
+        $panel = Panel::make()->id('member');
+
+        $this->assertFalse($user->canAccessPanel($panel));
+    }
+
+    public function test_user_without_discord_id_cannot_access_member_panel(): void
+    {
+        $user = User::factory()->create(['discord_id' => null]);
+
+        $panel = Panel::make()->id('member');
+
+        $this->assertFalse($user->canAccessPanel($panel));
     }
 }
