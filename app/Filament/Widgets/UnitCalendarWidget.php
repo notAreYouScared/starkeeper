@@ -9,12 +9,12 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Schema;
 use Guava\Calendar\Enums\CalendarViewType;
 use Guava\Calendar\Filament\CalendarWidget;
 use Guava\Calendar\ValueObjects\CalendarEvent as CalendarEventObject;
 use Guava\Calendar\ValueObjects\FetchInfo;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Schema;
 
 abstract class UnitCalendarWidget extends CalendarWidget
 {
