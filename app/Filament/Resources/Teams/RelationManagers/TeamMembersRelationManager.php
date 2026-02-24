@@ -12,6 +12,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Table;
 
 class TeamMembersRelationManager extends RelationManager
@@ -57,11 +58,6 @@ class TeamMembersRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('member.handle')
-                    ->label('RSI Handle')
-                    ->searchable()
-                    ->sortable(),
-
                 TextColumn::make('member.name')
                     ->label('Name')
                     ->searchable(),
@@ -78,12 +74,12 @@ class TeamMembersRelationManager extends RelationManager
                         default => 'Team Member',
                     }),
 
-                TextColumn::make('title')
+                TextInputColumn::make('title')
                     ->label('Title')
                     ->placeholder('—'),
 
-                TextColumn::make('sort_order')
-                    ->label('Order')
+                TextInputColumn::make('sort_order')
+                    ->label('Display Order')
                     ->sortable(),
             ])
             ->defaultSort('sort_order')

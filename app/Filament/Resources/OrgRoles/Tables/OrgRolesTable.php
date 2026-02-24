@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Table;
 
 class OrgRolesTable
@@ -14,10 +15,6 @@ class OrgRolesTable
     {
         return $table
             ->columns([
-                TextColumn::make('sort_order')
-                    ->label('Order')
-                    ->sortable(),
-
                 TextColumn::make('name')
                     ->label('Name')
                     ->searchable()
@@ -30,6 +27,11 @@ class OrgRolesTable
                 TextColumn::make('members_count')
                     ->label('Members')
                     ->counts('members')
+                    ->sortable(),
+
+                TextInputColumn::make('sort_order')
+                    ->label('Display Order')
+                    ->width(5)
                     ->sortable(),
             ])
             ->defaultSort('sort_order')
