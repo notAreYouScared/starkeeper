@@ -154,63 +154,48 @@
                                         <p class="text-xs text-gray-400 italic">No members assigned.</p>
                                     @else
                                         @php
-                                            $teamLeaders  = $team->teamMembers->where('role', 'leader');
-                                            $teamRegulars = $team->teamMembers->where('role', 'member');
+                                            $byRole = $team->teamMembers->groupBy(fn ($tm) => $tm->teamRole?->id ?? 0);
+                                            $sortedRoles = $team->teamMembers
+                                                ->sortBy(fn ($tm) => $tm->teamRole?->sort_order ?? 9999)
+                                                ->map(fn ($tm) => [
+                                                    'key'   => $tm->teamRole?->id ?? 0,
+                                                    'label' => $tm->teamRole?->label ?? 'Unassigned',
+                                                ])
+                                                ->unique('key')
+                                                ->values();
                                         @endphp
 
-                                        @if($teamLeaders->isNotEmpty())
-                                            <div class="mb-2">
-                                                <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Leaders</p>
-                                                <div class="flex flex-wrap gap-2">
-                                                    @foreach($teamLeaders as $tm)
-                                                        <div class="flex items-center gap-2 rounded-lg border {{ $s['border'] }} {{ $s['bg'] }} px-3 py-1.5">
-                                                            @if($tm->member->avatar_url)
-                                                                <img src="{{ $tm->member->avatar_url }}"
-                                                                     alt="{{ $tm->member->name }}"
-                                                                     class="h-6 w-6 shrink-0 rounded-full object-cover">
-                                                            @else
-                                                                <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full {{ $s['avatarBg'] }} {{ $s['text'] }} text-xs font-bold">
-                                                                    {{ strtoupper(substr($tm->member->name, 0, 2)) }}
-                                                                </div>
-                                                            @endif
-                                                            <div>
-                                                                <span class="text-sm font-medium text-white">{{ $tm->member->name }}</span>
-                                                                @if($tm->title)
-                                                                    <span class="ml-1 text-xs font-medium {{ $s['badge'] }} px-1.5 py-0.5 rounded">{{ $tm->title }}</span>
+                                        @foreach($sortedRoles as $roleEntry)
+                                            @php $roleMembers = $byRole[$roleEntry['key']] ?? collect() @endphp
+                                            @if($roleMembers->isNotEmpty())
+                                                <div class="mb-2">
+                                                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">
+                                                        {{ $roleEntry['label'] }}
+                                                    </p>
+                                                    <div class="flex flex-wrap gap-2">
+                                                        @foreach($roleMembers as $tm)
+                                                            <div class="flex items-center gap-2 rounded-lg border {{ $s['border'] }} {{ $s['bg'] }} px-3 py-1.5">
+                                                                @if($tm->member->avatar_url)
+                                                                    <img src="{{ $tm->member->avatar_url }}"
+                                                                         alt="{{ $tm->member->name }}"
+                                                                         class="h-6 w-6 shrink-0 rounded-full object-cover">
+                                                                @else
+                                                                    <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full {{ $s['avatarBg'] }} {{ $s['text'] }} text-xs font-bold">
+                                                                        {{ strtoupper(substr($tm->member->name, 0, 2)) }}
+                                                                    </div>
                                                                 @endif
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                        @if($teamRegulars->isNotEmpty())
-                                            <div>
-                                                <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Members</p>
-                                                <div class="flex flex-wrap gap-2">
-                                                    @foreach($teamRegulars as $tm)
-                                                        <div class="flex items-center gap-2 rounded-lg bg-gray-700/50 border border-white/10 px-3 py-1.5">
-                                                            @if($tm->member->avatar_url)
-                                                                <img src="{{ $tm->member->avatar_url }}"
-                                                                     alt="{{ $tm->member->name }}"
-                                                                     class="h-6 w-6 shrink-0 rounded-full object-cover">
-                                                            @else
-                                                                <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-600 text-gray-300 text-xs font-bold">
-                                                                    {{ strtoupper(substr($tm->member->name, 0, 2)) }}
+                                                                <div>
+                                                                    <span class="text-sm font-medium text-white">{{ $tm->member->name }}</span>
+                                                                    @if($tm->title)
+                                                                        <span class="ml-1 text-xs font-medium {{ $s['badge'] }} px-1.5 py-0.5 rounded">{{ $tm->title }}</span>
+                                                                    @endif
                                                                 </div>
-                                                            @endif
-                                                            <div>
-                                                                <span class="text-sm text-white">{{ $tm->member->name }}</span>
-                                                                @if($tm->title)
-                                                                    <span class="ml-1 text-xs text-gray-400 italic">{{ $tm->title }}</span>
-                                                                @endif
                                                             </div>
-                                                        </div>
-                                                    @endforeach
+                                                        @endforeach
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        @endif
+                                            @endif
+                                        @endforeach
                                     @endif
                                 </div>
                             @endforeach

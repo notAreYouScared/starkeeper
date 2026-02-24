@@ -29,7 +29,7 @@ class OrgHierarchyController extends Controller
 
         $units = Unit::with(['teams.teamMembers' => function ($query) {
             $query->orderBy('sort_order')->orderBy('id');
-        }, 'teams.teamMembers.member'])
+        }, 'teams.teamMembers.member', 'teams.teamMembers.teamRole'])
             ->orderBy('name')
             ->get();
 
