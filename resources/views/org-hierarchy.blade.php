@@ -135,7 +135,7 @@
                                         @if($team->image)
                                             <img src="{{ Storage::disk('public')->url($team->image) }}"
                                                  alt="{{ $team->name }} patch"
-                                                 class="h-14 w-14 shrink-0 rounded-lg object-contain bg-white/5 p-1">
+                                                 class="h-36 w-36 shrink-0 rounded-lg p-1">
                                         @endif
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center justify-between">
