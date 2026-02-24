@@ -3,12 +3,18 @@
 namespace App\Filament\Widgets;
 
 use App\Models\CalendarEvent;
+use App\Models\Unit;
 use Carbon\WeekDay;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Guava\Calendar\Enums\CalendarViewType;
 use Guava\Calendar\Filament\CalendarWidget;
 use Guava\Calendar\ValueObjects\CalendarEvent as CalendarEventObject;
 use Guava\Calendar\ValueObjects\FetchInfo;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 
 abstract class UnitCalendarWidget extends CalendarWidget
 {
@@ -25,7 +31,7 @@ abstract class UnitCalendarWidget extends CalendarWidget
 
     protected function getUnitId(): int
     {
-        $id = \App\Models\Unit::where('name', $this->getUnitName())->value('id');
+        $id = Unit::where('name', $this->getUnitName())->value('id');
 
         if ($id === null) {
             throw new \RuntimeException("Unit '{$this->getUnitName()}' not found. Ensure the database has been seeded.");
@@ -60,20 +66,23 @@ abstract class UnitCalendarWidget extends CalendarWidget
         ];
     }
 
-    protected function calendarEventSchema(\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
+    protected function calendarEventSchema(Schema $schema): Schema
     {
         return $schema->components([
-            \Filament\Forms\Components\TextInput::make('title')
-                ->label('Event Title')
+            TextInput::make('title')
+                ->label('Event Name')
                 ->required()
                 ->maxLength(255),
-            \Filament\Forms\Components\DateTimePicker::make('start')
+            Textarea::make('description')
+                ->label('Description')
+                ->maxLength(65535),
+            DateTimePicker::make('start')
                 ->label('Start')
                 ->required(),
-            \Filament\Forms\Components\DateTimePicker::make('end')
+            DateTimePicker::make('end')
                 ->label('End')
                 ->required(),
-            \Filament\Forms\Components\Toggle::make('all_day')
+            Toggle::make('all_day')
                 ->label('All Day')
                 ->default(false),
         ]);
