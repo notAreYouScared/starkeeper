@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Members\Schemas;
 
+use App\Models\OrgRole;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -13,7 +14,7 @@ class MemberForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->label('Full Name')
+                    ->label('Display Name')
                     ->required()
                     ->maxLength(255),
 
@@ -31,8 +32,8 @@ class MemberForm
 
                 TextInput::make('profile_url')
                     ->label('Profile URL')
-                    ->url()
-                    ->placeholder('https://robertsspaceindustries.com/citizens/...')
+                    ->disabled()
+                    ->readOnly()
                     ->maxLength(2048),
 
                 TextInput::make('title')
@@ -43,7 +44,7 @@ class MemberForm
                 Select::make('org_role_id')
                     ->label('Organisation Role')
                     ->relationship('orgRole', 'label', fn ($query) => $query->orderBy('sort_order'))
-                    ->default(fn () => \App\Models\OrgRole::where('name', 'member')->value('id'))
+                    ->default(fn () => OrgRole::where('name', 'member')->value('id'))
                     ->required(),
 
                 TextInput::make('sort_order')

@@ -21,7 +21,7 @@ class MembersTable
                     ->label('Avatar')
                     ->circular()
                     ->defaultImageUrl(null)
-                    ->size(36),
+                    ->imageSize(36),
 
                 TextColumn::make('handle')
                     ->label('RSI Handle')
