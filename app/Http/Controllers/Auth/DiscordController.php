@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
+
+class DiscordController extends Controller
+{
+    public function redirect()
+    {
+        return Socialite::driver('discord')->redirect();
+    }
+
+    public function callback()
+    {
+        $discordUser = Socialite::driver('discord')->user();
+
+        $user = User::updateOrCreate(
+            ['discord_id' => $discordUser->getId()],
+            [
+                'name'   => $discordUser->getName() ?? $discordUser->getNickname(),
+                'email'  => $discordUser->getEmail(),
+                'avatar' => $discordUser->getAvatar(),
+            ]
+        );
+
+        Auth::login($user, remember: true);
+
+        return redirect()->intended(route('filament.admin.pages.dashboard'));
+    }
+}
