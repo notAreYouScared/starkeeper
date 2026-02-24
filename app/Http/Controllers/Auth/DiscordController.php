@@ -22,7 +22,7 @@ class DiscordController extends Controller
         $user = User::updateOrCreate(
             ['discord_id' => $discordUser->getId()],
             [
-                'name'   => $discordUser->getName() ?? $discordUser->getNickname(),
+                'name'   => $discordUser->getNickname(),
                 'email'  => $discordUser->getEmail(),
                 'avatar' => $discordUser->getAvatar(),
             ]
@@ -31,7 +31,7 @@ class DiscordController extends Controller
         Member::updateOrCreate(
             ['discord_id' => $discordUser->getId()],
             [
-                'name'        => $discordUser->getName() ?? $discordUser->getNickname(),
+                'name'        => $discordUser->getNickname(),
                 'handle'      => $discordUser->getNickname(),
                 'avatar_url'  => $discordUser->getAvatar(),
                 'profile_url' => 'discord://-/users/' . $discordUser->getId(),
