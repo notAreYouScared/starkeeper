@@ -5,14 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Team extends Model
+class TeamRole extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['unit_id', 'name', 'description', 'image', 'sort_order'];
+    protected $fillable = ['unit_id', 'name', 'label', 'sort_order', 'color'];
 
     public function unit(): BelongsTo
     {
@@ -22,12 +21,5 @@ class Team extends Model
     public function teamMembers(): HasMany
     {
         return $this->hasMany(TeamMember::class);
-    }
-
-    public function members(): BelongsToMany
-    {
-        return $this->belongsToMany(Member::class, 'team_members')
-            ->withPivot(['team_role_id', 'title'])
-            ->withTimestamps();
     }
 }

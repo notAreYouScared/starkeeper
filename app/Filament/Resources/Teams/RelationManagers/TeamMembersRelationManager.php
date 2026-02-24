@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Teams\RelationManagers;
 
+use App\Models\TeamRole;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -32,13 +33,15 @@ class TeamMembersRelationManager extends RelationManager
                     ->preload()
                     ->required(),
 
-                Select::make('role')
+                Select::make('team_role_id')
                     ->label('Team Role')
-                    ->options([
-                        'leader' => 'Team Leader',
-                        'member' => 'Team Member',
-                    ])
-                    ->default('member')
+                    ->options(function () {
+                        $team = $this->getOwnerRecord();
+
+                        return TeamRole::where('unit_id', $team->unit_id)
+                            ->orderBy('sort_order')
+                            ->pluck('label', 'id');
+                    })
                     ->required(),
 
                 TextInput::make('title')
@@ -62,17 +65,10 @@ class TeamMembersRelationManager extends RelationManager
                     ->label('Name')
                     ->searchable(),
 
-                TextColumn::make('role')
+                TextColumn::make('teamRole.label')
                     ->label('Role')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'leader' => 'warning',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'leader' => 'Team Leader',
-                        default => 'Team Member',
-                    }),
+                    ->placeholder('—'),
 
                 TextInputColumn::make('title')
                     ->label('Title')
