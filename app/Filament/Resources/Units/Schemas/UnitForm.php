@@ -21,6 +21,12 @@ class UnitForm
                     ->label('Description')
                     ->rows(3)
                     ->maxLength(1000),
+
+                TextInput::make('sort_order')
+                    ->label('Sort Order')
+                    ->numeric()
+                    ->default(0)
+                    ->helperText('Lower numbers appear first.'),
             ]);
     }
 }

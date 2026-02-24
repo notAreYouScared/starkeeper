@@ -47,7 +47,12 @@ class TeamsTable
                     ->label('Members')
                     ->counts('teamMembers')
                     ->sortable(),
+
+                TextColumn::make('sort_order')
+                    ->label('Order')
+                    ->sortable(),
             ])
+            ->defaultSort('sort_order')
             ->filters([
                 SelectFilter::make('unit')
                     ->relationship('unit', 'name')

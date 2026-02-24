@@ -28,7 +28,12 @@ class UnitsTable
                     ->label('Teams')
                     ->counts('teams')
                     ->sortable(),
+
+                TextColumn::make('sort_order')
+                    ->label('Order')
+                    ->sortable(),
             ])
+            ->defaultSort('sort_order')
             ->filters([])
             ->recordActions([
                 EditAction::make(),
