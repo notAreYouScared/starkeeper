@@ -11,7 +11,7 @@ class TeamRole extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['unit_id', 'name', 'label', 'sort_order'];
+    protected $fillable = ['unit_id', 'name', 'label', 'sort_order', 'color'];
 
     public function unit(): BelongsTo
     {
