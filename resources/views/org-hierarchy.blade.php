@@ -131,16 +131,24 @@
                                 <div class="rounded-xl border border-white/10 bg-gray-800/50 p-4">
 
                                     {{-- Team header --}}
-                                    <div class="flex items-center justify-between mb-3">
-                                        <h4 class="font-semibold text-white">{{ $team->name }}</h4>
-                                        <span class="text-xs text-gray-500">
-                                            {{ $team->teamMembers->count() }} {{ str()->plural('member', $team->teamMembers->count()) }}
-                                        </span>
+                                    <div class="flex items-start gap-4 mb-3">
+                                        @if($team->image)
+                                            <img src="{{ Storage::disk('public')->url($team->image) }}"
+                                                 alt="{{ $team->name }} patch"
+                                                 class="h-14 w-14 shrink-0 rounded-lg object-contain bg-white/5 p-1">
+                                        @endif
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center justify-between">
+                                                <h4 class="font-semibold text-white">{{ $team->name }}</h4>
+                                                <span class="text-xs text-gray-500 ml-2 shrink-0">
+                                                    {{ $team->teamMembers->count() }} {{ str()->plural('member', $team->teamMembers->count()) }}
+                                                </span>
+                                            </div>
+                                            @if($team->description)
+                                                <p class="text-xs text-gray-400 mt-1">{{ $team->description }}</p>
+                                            @endif
+                                        </div>
                                     </div>
-
-                                    @if($team->description)
-                                        <p class="text-xs text-gray-400 mb-3">{{ $team->description }}</p>
-                                    @endif
 
                                     @if($team->teamMembers->isEmpty())
                                         <p class="text-xs text-gray-400 italic">No members assigned.</p>
