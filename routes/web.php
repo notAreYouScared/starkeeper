@@ -5,11 +5,18 @@ use App\Http\Controllers\OrgHierarchyController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('filament.admin.pages.dashboard');
-});
+    if (auth()->check()) {
+        return redirect()->route('filament.admin.pages.dashboard');
+    }
+    return view('home');
+})->name('home');
 
 Route::get('/org-hierarchy', [OrgHierarchyController::class, 'index'])
     ->name('org-hierarchy');
+
+Route::view('/history', 'history')->name('history');
+Route::view('/manifesto', 'manifesto')->name('manifesto');
+Route::view('/charter', 'charter')->name('charter');
 
 Route::middleware('guest')->group(function () {
     Route::get('/auth/discord/redirect', [DiscordController::class, 'redirect'])
