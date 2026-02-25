@@ -5,18 +5,27 @@ use App\Http\Controllers\OrgHierarchyController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    if (auth()->check()) {
-        return redirect()->route('filament.admin.pages.dashboard');
-    }
-    return view('home');
+    $page = \App\Models\ContentPage::where('slug', 'home')->first();
+    return view('home', compact('page'));
 })->name('home');
 
 Route::get('/org-hierarchy', [OrgHierarchyController::class, 'index'])
     ->name('org-hierarchy');
 
-Route::view('/history', 'history')->name('history');
-Route::view('/manifesto', 'manifesto')->name('manifesto');
-Route::view('/charter', 'charter')->name('charter');
+Route::get('/history', function () {
+    $page = \App\Models\ContentPage::where('slug', 'history')->first();
+    return view('history', compact('page'));
+})->name('history');
+
+Route::get('/manifesto', function () {
+    $page = \App\Models\ContentPage::where('slug', 'manifesto')->first();
+    return view('manifesto', compact('page'));
+})->name('manifesto');
+
+Route::get('/charter', function () {
+    $page = \App\Models\ContentPage::where('slug', 'charter')->first();
+    return view('charter', compact('page'));
+})->name('charter');
 
 Route::middleware('guest')->group(function () {
     Route::get('/auth/discord/redirect', [DiscordController::class, 'redirect'])

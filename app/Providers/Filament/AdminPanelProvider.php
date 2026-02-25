@@ -41,7 +41,7 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->navigationItems([
-                NavigationItem::make('Org Hierarchy')
+                NavigationItem::make('Hierarchy')
                     ->url(fn () => route('org-hierarchy'))
                     ->icon(Heroicon::OutlinedBuildingOffice2)
                     ->group('Organisation')

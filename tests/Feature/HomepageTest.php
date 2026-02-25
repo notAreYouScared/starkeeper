@@ -2,10 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class HomepageTest extends TestCase
 {
+    use RefreshDatabase;
     public function test_homepage_returns_successful_response_for_guests(): void
     {
         $response = $this->get('/');
@@ -64,5 +67,15 @@ class HomepageTest extends TestCase
         $response = $this->get('/');
 
         $response->assertSee('STARKEEPER-Logo.png');
+    }
+
+    public function test_authenticated_user_can_visit_homepage(): void
+    {
+        $user = User::factory()->create(['is_admin' => true]);
+
+        $response = $this->actingAs($user)->get('/');
+
+        $response->assertStatus(200);
+        $response->assertViewIs('home');
     }
 }

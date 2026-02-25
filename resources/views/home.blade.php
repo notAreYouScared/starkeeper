@@ -1,17 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-gray-950">
+<html lang="en" class="h-full bg-gray-950 dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StarKeeper – Star Citizen Organisation</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: { extend: {} }
-        }
-        document.documentElement.classList.add('dark');
-    </script>
+    @vite(['resources/css/app.css'])
 </head>
 <body class="min-h-full bg-gray-950 text-gray-100 antialiased">
 
@@ -28,7 +21,7 @@
                 <a href="{{ route('home') }}"
                    class="text-blue-400">Home</a>
                 <a href="{{ route('org-hierarchy') }}"
-                   class="text-gray-300 hover:text-blue-400 transition-colors">Org Hierarchy</a>
+                   class="text-gray-300 hover:text-blue-400 transition-colors">Hierarchy</a>
                 <a href="{{ route('history') }}"
                    class="text-gray-300 hover:text-blue-400 transition-colors">History</a>
                 <a href="{{ route('manifesto') }}"
@@ -60,10 +53,11 @@
 
         {{-- ─── Tagline & Links ─── --}}
         <section class="text-center space-y-6">
-            <p class="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                Welcome to Starkeeper Industries </br>
-                We mine it. We move it. We (probably) blow it.
-            </p>
+            @if($page)
+            <div class="prose prose-invert max-w-2xl mx-auto text-gray-300 leading-relaxed">
+                {!! \Illuminate\Support\Str::markdown($page->content) !!}
+            </div>
+            @endif
 
             <div class="flex flex-wrap items-center justify-center gap-4">
                 {{-- Discord button --}}
@@ -143,7 +137,7 @@
 
     <footer class="border-t border-white/10 mt-12">
         <div class="mx-auto max-w-5xl px-4 py-6 flex flex-wrap items-center justify-between gap-4 text-xs text-gray-500">
-            <span>&copy; {{ date('Y') }} StarKeeper. All rights reserved.</span>
+            <span>&copy; {{ date('Y') }} Starkeeper. All rights reserved.</span>
             <div class="flex items-center gap-4">
                 <a href="https://robertsspaceindustries.com/en/orgs/STARKEEPER"
                    target="_blank" rel="noopener noreferrer"

@@ -1,19 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-gray-950">
+<html lang="en" class="h-full bg-gray-950 dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organisation Hierarchy – StarKeeper</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {}
-            }
-        }
-        document.documentElement.classList.add('dark');
-    </script>
+    <title>Hierarchy – StarKeeper</title>
+    @vite(['resources/css/app.css'])
 </head>
 <body class="min-h-full bg-gray-950 text-gray-100 antialiased">
 
@@ -28,13 +19,13 @@
                     <span class="text-xl font-bold tracking-wider text-blue-400">Starkeeper Industries</span>
                 </a>
                 <span class="text-gray-500">/</span>
-                <span class="text-sm text-gray-300">Organisation Hierarchy</span>
+                <span class="text-sm text-gray-300">Hierarchy</span>
             </div>
             <nav class="flex items-center gap-4 text-sm">
                 <a href="{{ route('home') }}"
                    class="text-gray-300 hover:text-blue-400 transition-colors">Home</a>
                 <a href="{{ route('org-hierarchy') }}"
-                   class="text-blue-400">Org Hierarchy</a>
+                   class="text-blue-400">Hierarchy</a>
                 <a href="{{ route('history') }}"
                    class="text-gray-300 hover:text-blue-400 transition-colors">History</a>
                 <a href="{{ route('manifesto') }}"
