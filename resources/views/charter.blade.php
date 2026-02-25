@@ -23,22 +23,28 @@
                     <img src="{{ url('image/logo.png') }}"
                          alt="StarKeeper Logo"
                          class="h-8 w-auto">
-                    <span class="text-xl font-bold tracking-wider text-blue-400">StarKeeper</span>
+                    <span class="text-xl font-bold tracking-wider text-blue-400">Starkeeper Industries</span>
                 </a>
                 <span class="text-gray-500">/</span>
                 <span class="text-sm text-gray-300">Charter</span>
             </div>
             <nav class="flex items-center gap-4 text-sm">
-                <a href="{{ route('org-hierarchy') }}" class="text-gray-300 hover:text-blue-400 transition-colors">Org Hierarchy</a>
-                <a href="{{ route('history') }}" class="text-gray-300 hover:text-blue-400 transition-colors">History</a>
-                <a href="{{ route('manifesto') }}" class="text-gray-300 hover:text-blue-400 transition-colors">Manifesto</a>
-                <a href="{{ route('charter') }}" class="text-purple-400">Charter</a>
+                <a href="{{ route('home') }}"
+                   class="text-gray-300 hover:text-blue-400 transition-colors">Home</a>
+                <a href="{{ route('org-hierarchy') }}"
+                   class="text-gray-300 hover:text-blue-400 transition-colors">Org Hierarchy</a>
+                <a href="{{ route('history') }}"
+                   class="text-gray-300 hover:text-blue-400 transition-colors">History</a>
+                <a href="{{ route('manifesto') }}"
+                   class="text-gray-300 hover:text-blue-400 transition-colors">Manifesto</a>
+                <a href="{{ route('charter') }}"
+                   class="text-purple-400">Charter</a>
                 @auth
                     <a href="{{ route('filament.admin.pages.dashboard') }}"
-                       class="text-xs text-blue-400 hover:text-blue-300 transition-colors">Admin Panel →</a>
+                       class="text-sm text-blue-400 hover:text-blue-300 transition-colors">Admin Panel →</a>
                 @else
                     <a href="{{ route('filament.admin.auth.login') }}"
-                       class="text-xs text-blue-400 hover:text-blue-300 transition-colors">Sign in →</a>
+                       class="text-sm text-blue-400 hover:text-blue-300 transition-colors">Sign in →</a>
                 @endauth
             </nav>
         </div>
@@ -54,70 +60,71 @@
         <div class="space-y-8 text-gray-300 leading-relaxed">
 
             <section>
-                <h2 class="text-lg font-bold text-white mb-3 uppercase tracking-wider">I. Membership</h2>
-                <ol class="space-y-2 list-decimal list-inside">
-                    <li>Membership in StarKeeper is open to any Star Citizen player in good standing.</li>
-                    <li>All new members are subject to a probationary period during which leadership will evaluate
-                        conduct and contribution before granting full member status.</li>
-                    <li>Members are expected to conduct themselves with respect and professionalism at all times,
-                        both within the organisation and when representing StarKeeper in public.</li>
-                    <li>Membership may be revoked by leadership for conduct unbecoming, repeated rule violations,
-                        or prolonged inactivity without notice.</li>
+                <h2 class="text-lg font-bold text-white mb-3 uppercase tracking-wider">I. Purpose</h2>
+                Starkeeper Industries exists to bring together explorers, fighters, traders, and all-around weirdos from across the ‘verse in one laid-back, often chaotic but oddly effective organization.
+                Whether you’re hauling cargo, mining rocks, or storming bunkers, there’s a place for you here.
+                Our goal? Have fun, blow stuff up (on purpose or not), and look good doing it.
+            </section>
+
+            <section>
+                <h2 class="text-lg font-bold text-white mb-3 uppercase tracking-wider">II. Structure</h2>
+                <ol class="space-y-2 list-disc list-inside">
+                    <li>
+                        <strong class="text-white">Industry</strong> – Mining, refining, repairing, salvaging—basically the folks who make the money and fix the stuff we break.
+                    </li>
+                    <li>
+                        <strong class="text-white">Logistics</strong> – Hauling gear, moving assets, organizing supply lines, and always forgetting where they parked.
+                    </li>
+                    <li>
+                        <strong class="text-white">Security</strong> – If it shoots, they bring it. From bunker clearing to escort missions, these are the trigger-happy pros (or close enough).
+                    </li>
+                </ol>
+                <br/>
+                Each branch is autonomous but works together like a well-lubed multicrew ship… on a good day.
+            </section>
+
+            <section>
+                <h2 class="text-lg font-bold text-white mb-3 uppercase tracking-wider">III. Membership</h2>
+                <ol class="space-y-2 list-disc list-inside">
+                    <li>
+                        Say hi.
+                    </li>
+                    <li>
+                        Don't be a jerk.
+                    </li>
+                    <li>
+                        Pick a Branch ( or don't-wander the void!).
+                    </li>
+                    <li>
+                        Participate when you want; we don't do mandatory attendance.
+                    </li>
                 </ol>
             </section>
 
             <section>
-                <h2 class="text-lg font-bold text-white mb-3 uppercase tracking-wider">II. Code of Conduct</h2>
-                <ol class="space-y-2 list-decimal list-inside">
-                    <li>Treat every member and guest with respect. Harassment, discrimination, and bullying of any kind
-                        will not be tolerated and may result in immediate removal.</li>
-                    <li>Do not engage in griefing, scamming, or any activity that brings disrepute to the StarKeeper name.</li>
-                    <li>Disputes between members are to be resolved peacefully; if resolution cannot be reached,
-                        the matter is to be escalated to a Director or leadership representative.</li>
-                    <li>Keep organisational communications (strategies, rosters, internal discussions) confidential
-                        unless explicitly authorised to share.</li>
-                    <li>Do not make public statements on behalf of StarKeeper without prior approval from leadership.</li>
+                <h2 class="text-lg font-bold text-white mb-3 uppercase tracking-wider">IV. Culture</h2>
+                <ol class="space-y-2 list-disc list-inside">
+                    <li>We are casual-first, fun-second, professional-never (unless we really have to).</li>
+                    <li>Weekly events usually start at 7 or 9 PM EST—pop in or out as you like.</li>
+                    <li>We’re a dysfunctional family in the best way: chaotic, loyal, and always ready to revive you when you faceplant in a bunker.</li>
                 </ol>
             </section>
 
             <section>
-                <h2 class="text-lg font-bold text-white mb-3 uppercase tracking-wider">III. Organisational Structure</h2>
-                <ol class="space-y-2 list-decimal list-inside">
-                    <li><strong class="text-white">Leadership</strong> — The founding council and head officers responsible
-                        for overall direction, policy, and final decisions.</li>
-                    <li><strong class="text-white">Directors</strong> — Division leads who manage day-to-day operations
-                        within Security, Industry, and Racing.</li>
-                    <li><strong class="text-white">Moderators</strong> — Trusted members who assist with community
-                        management, event coordination, and member support.</li>
-                    <li><strong class="text-white">Members</strong> — The core of StarKeeper, participating in operations
-                        and contributing to org activities.</li>
-                    <li>Promotions are awarded based on demonstrated contribution, reliability, and the recommendation
-                        of a Director or Leadership member.</li>
+                <h2 class="text-lg font-bold text-white mb-3 uppercase tracking-wider">V. Rules</h2>
+                <ol class="space-y-2 list-disc list-inside">
+                    <li>We joke a lot, but we take respect and inclusion seriously.</li>
+                    <li>No harassment, hate speech, or griefing. We don’t tolerate that.</li>
+                    <li>Follow leadership guidance, especially in missions.</li>
+                    <li>Most importantly: bring snacks. Or ammo. Preferably both.</li>
                 </ol>
             </section>
 
-            <section>
-                <h2 class="text-lg font-bold text-white mb-3 uppercase tracking-wider">IV. Operations</h2>
-                <ol class="space-y-2 list-decimal list-inside">
-                    <li>Scheduled operations are announced in advance via Discord and the org website.
-                        Members are encouraged to attend but attendance is never mandatory.</li>
-                    <li>During operations members are expected to follow the directions of the designated
-                        Operation Commander unless those directions violate this Charter or common sense.</li>
-                    <li>Loot, credits, and rewards obtained during joint operations are distributed according to
-                        the policy set by the Operation Commander before the operation begins.</li>
-                    <li>Friendly fire is strictly prohibited during operations and may be treated as a
-                        conduct violation.</li>
-                </ol>
-            </section>
-
-            <section>
-                <h2 class="text-lg font-bold text-white mb-3 uppercase tracking-wider">V. Amendments</h2>
-                <ol class="space-y-2 list-decimal list-inside">
-                    <li>This Charter may be amended by a majority vote of the Leadership council.</li>
-                    <li>Proposed amendments must be circulated to all Directors at least 72 hours before a vote
-                        is called.</li>
-                    <li>All members will be notified of Charter changes within 24 hours of ratification.</li>
-                </ol>
+            <br>
+                <h2 class="text-lg font-bold text-white mb-3 uppercase tracking-wider">V. Leadership</h2>
+                Leadership exists to guide the chaos, not crush it. Branch leads and team leads help coordinate events, answer questions, and keep things moving.
+            <br><br>
+                Think of them less like bosses and more like your slightly responsible space uncles and aunts.
             </section>
 
         </div>

@@ -22,9 +22,11 @@
                 <img src="{{ url('image/logo.png') }}"
                      alt="StarKeeper Logo"
                      class="h-8 w-auto">
-                <span class="text-xl font-bold tracking-wider text-blue-400">StarKeeper</span>
+                <span class="text-xl font-bold tracking-wider text-blue-400">Starkeeper Industries</span>
             </div>
             <nav class="flex items-center gap-4 text-sm">
+                <a href="{{ route('home') }}"
+                   class="text-blue-400">Home</a>
                 <a href="{{ route('org-hierarchy') }}"
                    class="text-gray-300 hover:text-blue-400 transition-colors">Org Hierarchy</a>
                 <a href="{{ route('history') }}"
@@ -35,10 +37,10 @@
                    class="text-gray-300 hover:text-blue-400 transition-colors">Charter</a>
                 @auth
                     <a href="{{ route('filament.admin.pages.dashboard') }}"
-                       class="text-xs text-blue-400 hover:text-blue-300 transition-colors">Admin Panel →</a>
+                       class="text-sm text-blue-400 hover:text-blue-300 transition-colors">Admin Panel →</a>
                 @else
                     <a href="{{ route('filament.admin.auth.login') }}"
-                       class="text-xs text-blue-400 hover:text-blue-300 transition-colors">Sign in →</a>
+                       class="text-sm text-blue-400 hover:text-blue-300 transition-colors">Sign in →</a>
                 @endauth
             </nav>
         </div>
@@ -50,12 +52,7 @@
              alt="StarKeeper Banner"
              class="w-full object-cover object-center"
              style="max-height: 340px;">
-        <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/40 to-transparent"></div>
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
-            <img src="{{ url('image/logo.png') }}"
-                 alt="StarKeeper Logo"
-                 class="h-24 w-auto drop-shadow-2xl">
-            <h1 class="text-3xl font-black tracking-widest uppercase text-white drop-shadow-lg">StarKeeper</h1>
+        <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/5 to-transparent"></div>
         </div>
     </div>
 
@@ -64,7 +61,8 @@
         {{-- ─── Tagline & Links ─── --}}
         <section class="text-center space-y-6">
             <p class="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                An elite Star&nbsp;Citizen organisation united by a commitment to excellence, teamwork, and adventure across the 'verse.
+                Welcome to Starkeeper Industries </br>
+                We mine it. We move it. We (probably) blow it.
             </p>
 
             <div class="flex flex-wrap items-center justify-center gap-4">
@@ -92,7 +90,6 @@
 
         {{-- ─── Navigation Cards ─── --}}
         <section>
-            <h2 class="text-sm font-semibold uppercase tracking-widest text-gray-500 mb-5">Explore</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
                 <a href="{{ route('org-hierarchy') }}"

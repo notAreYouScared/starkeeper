@@ -23,22 +23,28 @@
                     <img src="{{ url('image/logo.png') }}"
                          alt="StarKeeper Logo"
                          class="h-8 w-auto">
-                    <span class="text-xl font-bold tracking-wider text-blue-400">StarKeeper</span>
+                    <span class="text-xl font-bold tracking-wider text-blue-400">Starkeeper Industries</span>
                 </a>
                 <span class="text-gray-500">/</span>
                 <span class="text-sm text-gray-300">History</span>
             </div>
             <nav class="flex items-center gap-4 text-sm">
-                <a href="{{ route('org-hierarchy') }}" class="text-gray-300 hover:text-blue-400 transition-colors">Org Hierarchy</a>
-                <a href="{{ route('history') }}" class="text-yellow-400">History</a>
-                <a href="{{ route('manifesto') }}" class="text-gray-300 hover:text-blue-400 transition-colors">Manifesto</a>
-                <a href="{{ route('charter') }}" class="text-gray-300 hover:text-blue-400 transition-colors">Charter</a>
+                <a href="{{ route('home') }}"
+                   class="text-gray-300 hover:text-blue-400 transition-colors">Home</a>
+                <a href="{{ route('org-hierarchy') }}"
+                   class="text-gray-300 hover:text-blue-400 transition-colors">Org Hierarchy</a>
+                <a href="{{ route('history') }}"
+                   class="text-yellow-400">History</a>
+                <a href="{{ route('manifesto') }}"
+                   class="text-gray-300 hover:text-blue-400 transition-colors">Manifesto</a>
+                <a href="{{ route('charter') }}"
+                   class="text-gray-300 hover:text-blue-400 transition-colors">Charter</a>
                 @auth
                     <a href="{{ route('filament.admin.pages.dashboard') }}"
-                       class="text-xs text-blue-400 hover:text-blue-300 transition-colors">Admin Panel →</a>
+                       class="text-sm text-blue-400 hover:text-blue-300 transition-colors">Admin Panel →</a>
                 @else
                     <a href="{{ route('filament.admin.auth.login') }}"
-                       class="text-xs text-blue-400 hover:text-blue-300 transition-colors">Sign in →</a>
+                       class="text-sm text-blue-400 hover:text-blue-300 transition-colors">Sign in →</a>
                 @endauth
             </nav>
         </div>
@@ -48,45 +54,52 @@
 
         <div class="flex items-center gap-3 mb-8">
             <div class="h-10 w-1 rounded bg-yellow-400"></div>
-            <h1 class="text-3xl font-black tracking-widest uppercase text-yellow-400">History</h1>
+            <h1 class="text-3xl font-black tracking-widest uppercase text-yellow-400">History - PAGE IS WIP</h1>
         </div>
 
         <div class="space-y-6 text-gray-300 leading-relaxed">
 
             <p>
-                StarKeeper was founded by a tight-knit group of pilots and adventurers who shared one conviction:
-                that the vast expanse of the 'verse is best explored—and defended—together.
-                What began as a handful of friends meeting in a small hangar on ArcCorp has grown into one of the most
-                respected multi-role organisations in the galaxy.
+                Looking for an org that’s chill, semi-functional, and slightly obsessed with loot? You found us.
+                Starkeeper Industries is a US-based, laid-back org with no activity requirements, weekly events, and a proud tradition of barely holding it together and still winning.
+                We’re a bunch of casual misfits who like to run missions, talk trash, and make a mess of the ‘verse—with just enough structure to keep things from catching fire. (Well, most of the time.)
             </p>
 
             <p>
-                In the early days our founders made do with whatever ships they could scrape together, taking on
-                salvage contracts and security patrols to fund the dream of something bigger.
-                Those humble missions forged bonds of trust and taught us the values that still define us today:
-                reliability, discipline, and loyalty to one another above all else.
+                Starkeeper Industries is built around good people, chill vibes, and a healthy dose of space chaos. We welcome everyone from veteran players to brand-new pilots and encourage members to jump in, squad up, and have fun. Whether you’re moving cargo, mining ore, running escort, or just causing “accidental” explosions, there’s a place for you here.
+
+                There are no activity requirements — life comes first. We’re a dysfunctional family in the best way: supportive, sarcastic, and always down for a good time (or at least a decent crash landing).
+                If you’re looking for an org that’s active without being sweaty, organized without being strict, and full of people who laugh when things go wrong… you’re in the right place.
             </p>
 
             <p>
-                As our reputation grew, so did our numbers.
-                Skilled traders, battle-hardened fighters, daring racers, and tireless industrialists answered the call,
-                each bringing their own expertise to bear.
-                We organised ourselves into specialised divisions—Security, Industry, and Racing—giving every member
-                a home where their talents could shine while contributing to the whole.
+                Because space is dangerous, weird, and way more fun with people who don’t mind laughing through the chaos.
+
+                Here’s what you get when you join us:
+
+                Laid-Back Vibes – No activity requirements, no pressure. Play when you want, how you want. We’re here to have fun, not run a second job.
+                Three Divisions, One Dysfunctional Family – Whether you’re into hauling cargo, building industry, or bringing the boom, we’ve got a place for you in Logistics, Industry, or Security.
+                Weekly Events – We run casual ops every week (usually around 9pm EST) with a mix of PvE, PvP, and “did anyone remember to fuel the ship?” moments.
+                Active Discord – Our comms are always buzzing. Voice chat, memes, tactical talk, or just yelling about someone flying their Cutty Black into a wall — we’ve got it all.
+                Welcoming Crew – New players, returning vets, and day-one grinders all welcome. We’ve got your back (and probably a medpen).
+                If you’re looking for a crew that knows how to get stuff done and have a laugh doing it, Starkeeper Industries is the org for you.
+
+                Join us. It’ll be fine… Probably.
             </p>
 
             <p>
-                Today StarKeeper stands as a fully realised multi-discipline organisation.
-                We have participated in large-scale fleet operations, defended allied factions, built industrial
-                supply chains, and competed in racing circuits across the 'verse.
-                Through every challenge we have remained true to the founding spirit: a crew that looks after
-                its own and leaves its mark on the universe.
+                We run three glorious divisions, each with its own vibe, ops, and opportunities to make bad decisions with good people:
+
+                Industry – You like rocks? We got rocks. Mining, refining, salvaging—if it makes money, we’re on it.
+                Logistics – Space Uber meets Amazon Prime. We haul, trade, and deliver with minimal explosions.
+                Security – Big guns. Loud noises. PvP. Bunker ops. Escort missions. We shoot first and ask “was that a teammate?” later.
+                Play your way, switch branches anytime, and never worry about being “good enough.” If you’re breathing and semi-coherent, you’re qualified.
             </p>
 
             <p>
-                Our journey is far from over.
-                With the continuous expansion of the 'verse we look forward to new systems to explore,
-                new alliances to forge, and new chapters of StarKeeper history yet to be written.
+                Still Not Sure?
+                Hop into a mission and vibe with us. Worst case, you get shot in the back by someone friendly.
+                Best case? You find your new favorite place to blow off steam (and maybe some ships).
             </p>
 
         </div>

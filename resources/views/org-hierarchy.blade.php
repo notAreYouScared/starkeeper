@@ -25,22 +25,28 @@
                     <img src="{{ url('image/logo.png') }}"
                          alt="StarKeeper Logo"
                          class="h-8 w-auto">
-                    <span class="text-xl font-bold tracking-wider text-blue-400">StarKeeper</span>
+                    <span class="text-xl font-bold tracking-wider text-blue-400">Starkeeper Industries</span>
                 </a>
                 <span class="text-gray-500">/</span>
                 <span class="text-sm text-gray-300">Organisation Hierarchy</span>
             </div>
             <nav class="flex items-center gap-4 text-sm">
-                <a href="{{ route('org-hierarchy') }}" class="text-blue-400">Org Hierarchy</a>
-                <a href="{{ route('history') }}" class="text-gray-300 hover:text-blue-400 transition-colors">History</a>
-                <a href="{{ route('manifesto') }}" class="text-gray-300 hover:text-blue-400 transition-colors">Manifesto</a>
-                <a href="{{ route('charter') }}" class="text-gray-300 hover:text-blue-400 transition-colors">Charter</a>
+                <a href="{{ route('home') }}"
+                   class="text-gray-300 hover:text-blue-400 transition-colors">Home</a>
+                <a href="{{ route('org-hierarchy') }}"
+                   class="text-blue-400">Org Hierarchy</a>
+                <a href="{{ route('history') }}"
+                   class="text-gray-300 hover:text-blue-400 transition-colors">History</a>
+                <a href="{{ route('manifesto') }}"
+                   class="text-gray-300 hover:text-blue-400 transition-colors">Manifesto</a>
+                <a href="{{ route('charter') }}"
+                   class="text-gray-300 hover:text-blue-400 transition-colors">Charter</a>
                 @auth
                     <a href="{{ route('filament.admin.pages.dashboard') }}"
-                       class="text-xs text-blue-400 hover:text-blue-300 transition-colors">Admin Panel →</a>
+                       class="text-sm text-blue-400 hover:text-blue-300 transition-colors">Admin Panel →</a>
                 @else
                     <a href="{{ route('filament.admin.auth.login') }}"
-                       class="text-xs text-blue-400 hover:text-blue-300 transition-colors">Sign in →</a>
+                       class="text-sm text-blue-400 hover:text-blue-300 transition-colors">Sign in →</a>
                 @endauth
             </nav>
         </div>
