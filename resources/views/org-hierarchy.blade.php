@@ -22,7 +22,7 @@
         <div class="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <a href="{{ route('home') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                    <img src="{{ public_path('image/logo.png') }}"
+                    <img src="{{ url('image/logo.png') }}"
                          alt="StarKeeper Logo"
                          class="h-8 w-auto">
                     <span class="text-xl font-bold tracking-wider text-blue-400">StarKeeper</span>
