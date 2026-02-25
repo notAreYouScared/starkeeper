@@ -2,7 +2,7 @@
     .sk-discord-divider-line { border-top: 1px solid #d1d5db; }
     .sk-discord-divider-label { background: #fff; color: #6b7280; }
     .dark .sk-discord-divider-line { border-top: 1px solid #4b5563; }
-    .dark .sk-discord-divider-label { background: rgb(31 41 55); color: #9ca3af; }
+    .dark .sk-discord-divider-label { background: rgb(24 24 27); color: #9ca3af; }
 </style>
 
 <div style="margin-top:1rem;">

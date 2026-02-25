@@ -19,7 +19,7 @@
     <header class="border-b border-white/10 bg-gray-900/80 backdrop-blur sticky top-0 z-10">
         <div class="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <img src="https://robertsspaceindustries.com/media/wpx3j3876pn7ir/logo/STARKEEPER-Logo.png"
+                <img src="{{ public_path('image/logo.png') }}"
                      alt="StarKeeper Logo"
                      class="h-8 w-auto">
                 <span class="text-xl font-bold tracking-wider text-blue-400">StarKeeper</span>
@@ -46,13 +46,13 @@
 
     {{-- ─── Hero Banner ─── --}}
     <div class="relative w-full overflow-hidden" style="max-height: 340px;">
-        <img src="https://robertsspaceindustries.com/media/0b1swvqzok9dtr/banner/STARKEEPER-Banner.png"
+        <img src="{{ public_path('image/banner.png') }}"
              alt="StarKeeper Banner"
              class="w-full object-cover object-center"
              style="max-height: 340px;">
         <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/40 to-transparent"></div>
         <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
-            <img src="https://robertsspaceindustries.com/media/wpx3j3876pn7ir/logo/STARKEEPER-Logo.png"
+            <img src="{{ public_path('image/logo.png') }}"
                  alt="StarKeeper Logo"
                  class="h-24 w-auto drop-shadow-2xl">
             <h1 class="text-3xl font-black tracking-widest uppercase text-white drop-shadow-lg">StarKeeper</h1>
