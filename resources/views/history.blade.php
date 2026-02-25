@@ -32,7 +32,7 @@
                 <a href="{{ route('home') }}"
                    class="text-gray-300 hover:text-blue-400 transition-colors">Home</a>
                 <a href="{{ route('org-hierarchy') }}"
-                   class="text-gray-300 hover:text-blue-400 transition-colors">Org Hierarchy</a>
+                   class="text-gray-300 hover:text-blue-400 transition-colors">Hierarchy</a>
                 <a href="{{ route('history') }}"
                    class="text-yellow-400">History</a>
                 <a href="{{ route('manifesto') }}"
