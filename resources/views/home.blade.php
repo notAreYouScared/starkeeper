@@ -60,10 +60,11 @@
 
         {{-- ─── Tagline & Links ─── --}}
         <section class="text-center space-y-6">
-            <p class="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                Welcome to Starkeeper Industries </br>
-                We mine it. We move it. We (probably) blow it.
-            </p>
+            @if($page)
+            <div class="prose prose-invert max-w-2xl mx-auto text-gray-300 leading-relaxed">
+                {!! \Illuminate\Support\Str::markdown($page->content) !!}
+            </div>
+            @endif
 
             <div class="flex flex-wrap items-center justify-center gap-4">
                 {{-- Discord button --}}

@@ -54,25 +54,10 @@
             <div class="h-10 w-1 rounded bg-green-400"></div>
             <h1 class="text-3xl font-black tracking-widest uppercase text-green-400">Manifesto</h1>
         </div>
-        <div class="space-y-8 text-gray-300 leading-relaxed">
-            <section>
-                <h2 class="text-lg font-bold text-white mb-3 uppercase tracking-wider">Our Mission</h2>
-                <p>
-                    Explore boldly, operate together, and enjoy the chaos.
-                </p>
-            </section>
-            <section>
-                <p>
-                    We’re here to build a strong, supportive, and hilarious community of players who thrive in all corners of the ’verse — from mining rocks and hauling cargo to jumping into firefights and forgetting to bring medpens.
-                </p>
-                <p>
-                    We believe in teamwork without pressure, structure without rigidity, and fun above all else. Through our three divisions — Logistics, Industry, and Security — we aim to create opportunities for every member to find their place, chase their goals, and make some questionable decisions with good company.
-                </p>
-            </section>
-
-            <section>
-                <p class="font-bold text-amber-300">Because in the end, space is cold — but it doesn’t have to be lonely.</p>
-            </section>
+        <div class="prose prose-invert max-w-none text-gray-300 leading-relaxed">
+            @if($page)
+            {!! \Illuminate\Support\Str::markdown($page->content) !!}
+            @endif
         </div>
     </main>
 
