@@ -167,4 +167,35 @@ class TrainingTrackerTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('No training categories have been configured yet');
     }
+
+    public function test_subtopic_description_is_stored_and_shown_as_tooltip(): void
+    {
+        $user     = User::factory()->create(['is_admin' => false]);
+        $member   = $this->createMember();
+        $category = TrainingCategory::create(['name' => 'Ship Mining', 'sort_order' => 1]);
+        TrainingSubtopic::create([
+            'training_category_id' => $category->id,
+            'name'                 => 'Mining head operation',
+            'description'          => 'Knows how to properly charge and fire the mining head.',
+            'sort_order'           => 1,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('Mining head operation');
+        $response->assertSee('Knows how to properly charge and fire the mining head.');
+    }
+
+    public function test_subtopic_description_is_nullable(): void
+    {
+        $category = TrainingCategory::create(['name' => 'Combat', 'sort_order' => 1]);
+        $subtopic = TrainingSubtopic::create([
+            'training_category_id' => $category->id,
+            'name'                 => 'Dogfighting',
+            'sort_order'           => 1,
+        ]);
+
+        $this->assertNull($subtopic->description);
+    }
 }

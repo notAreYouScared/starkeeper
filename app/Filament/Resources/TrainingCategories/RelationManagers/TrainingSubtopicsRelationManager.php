@@ -7,6 +7,7 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -29,6 +30,12 @@ class TrainingSubtopicsRelationManager extends RelationManager
                     ->required()
                     ->maxLength(255),
 
+                Textarea::make('description')
+                    ->label('Description')
+                    ->placeholder('Brief description shown as a tooltip on the member profile.')
+                    ->rows(3)
+                    ->maxLength(1000),
+
                 TextInput::make('sort_order')
                     ->label('Sort Order')
                     ->numeric()
@@ -44,6 +51,11 @@ class TrainingSubtopicsRelationManager extends RelationManager
                 TextColumn::make('name')
                     ->label('Subtopic Name')
                     ->searchable(),
+
+                TextColumn::make('description')
+                    ->label('Description')
+                    ->placeholder('—')
+                    ->limit(60),
 
                 TextInputColumn::make('sort_order')
                     ->label('Display Order')

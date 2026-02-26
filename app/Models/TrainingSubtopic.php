@@ -11,7 +11,7 @@ class TrainingSubtopic extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['training_category_id', 'name', 'sort_order'];
+    protected $fillable = ['training_category_id', 'name', 'description', 'sort_order'];
 
     public function category(): BelongsTo
     {
