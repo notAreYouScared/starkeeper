@@ -20,6 +20,13 @@ class MemberProfileController extends Controller
         $ratings = $member->trainingRatings()
             ->pluck('rating', 'training_subtopic_id');
 
-        return view('member-profile', compact('member', 'categories', 'ratings'));
+        $categoryAverages = $categories->mapWithKeys(function ($category) use ($ratings) {
+            $subtopicIds = $category->subtopics->pluck('id');
+            $categoryRatings = $ratings->only($subtopicIds);
+
+            return [$category->id => $categoryRatings->isNotEmpty() ? (float) $categoryRatings->avg() : 0.0];
+        });
+
+        return view('member-profile', compact('member', 'categories', 'ratings', 'categoryAverages'));
     }
 }

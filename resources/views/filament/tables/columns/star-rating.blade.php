@@ -3,11 +3,13 @@
         rating: {{ (float) ($getState() ?? 0) }},
         hovered: 0,
         setRating(val) {
+            // Clicking the same value again reduces the rating by 0.5 (full → half).
             const next = (val === this.rating) ? Math.max(0, val - 0.5) : val;
             this.rating = next;
             $wire.call('updateSubtopicRating', {{ $getRecord()->id }}, next);
         },
         onMouseMove(event, i) {
+            // Cursor in the left half of the button → half-star (i-0.5); right half → full star (i).
             const rect = event.currentTarget.getBoundingClientRect();
             this.hovered = (event.clientX - rect.left) < rect.width / 2 ? i - 0.5 : i;
         }

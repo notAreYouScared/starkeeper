@@ -157,6 +157,54 @@ class TrainingTrackerTest extends TestCase
         ]);
     }
 
+    public function test_member_profile_shows_overall_category_rating(): void
+    {
+        $user     = User::factory()->create(['is_admin' => false]);
+        $member   = $this->createMember();
+        $category = TrainingCategory::create(['name' => 'Combat', 'sort_order' => 1]);
+
+        $subtopic1 = TrainingSubtopic::create([
+            'training_category_id' => $category->id,
+            'name'                 => 'Dogfighting',
+            'sort_order'           => 1,
+        ]);
+        $subtopic2 = TrainingSubtopic::create([
+            'training_category_id' => $category->id,
+            'name'                 => 'Formation Flying',
+            'sort_order'           => 2,
+        ]);
+
+        MemberTrainingRating::create(['member_id' => $member->id, 'training_subtopic_id' => $subtopic1->id, 'rating' => 4.0]);
+        MemberTrainingRating::create(['member_id' => $member->id, 'training_subtopic_id' => $subtopic2->id, 'rating' => 3.0]);
+
+        $response = $this->actingAs($user)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        // Average of 4.0 + 3.0 = 3.5
+        $response->assertSee('Overall:');
+        $response->assertSee('3.5');
+    }
+
+    public function test_member_profile_shows_zero_overall_when_no_ratings(): void
+    {
+        $user     = User::factory()->create(['is_admin' => false]);
+        $member   = $this->createMember();
+        $category = TrainingCategory::create(['name' => 'Logistics', 'sort_order' => 1]);
+        TrainingSubtopic::create([
+            'training_category_id' => $category->id,
+            'name'                 => 'Cargo',
+            'sort_order'           => 1,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('Overall:');
+        // No ratings → 0.0
+        $response->assertSee('0.0');
+    }
+
+
     public function test_member_profile_shows_empty_state_when_no_categories(): void
     {
         $user   = User::factory()->create(['is_admin' => false]);
