@@ -84,6 +84,10 @@
                                 @else
                                     <p class="font-semibold text-white truncate">{{ $member->name }}</p>
                                 @endif
+                                @auth
+                                    <a href="{{ route('member.profile', $member) }}"
+                                       class="block text-xs text-blue-500 hover:text-blue-400 transition-colors mt-0.5">View profile →</a>
+                                @endauth
                                 @if($member->title)
                                     <span class="mt-1 inline-block text-xs font-medium {{ $accent['text'] }} bg-white/5 px-2 py-0.5 rounded">
                                         {{ $member->title }}
@@ -205,7 +209,12 @@
                                                                     </div>
                                                                 @endif
                                                                 <div>
-                                                                    <span class="text-sm font-medium text-white">{{ $tm->member->name }}</span>
+                                                                    @auth
+                                                                        <a href="{{ route('member.profile', $tm->member) }}"
+                                                                           class="text-sm font-medium text-white hover:text-blue-400 transition-colors">{{ $tm->member->name }}</a>
+                                                                    @else
+                                                                        <span class="text-sm font-medium text-white">{{ $tm->member->name }}</span>
+                                                                    @endauth
                                                                     @if($tm->title)
                                                                         <span class="ml-1 text-xs font-medium px-1.5 py-0.5 rounded"
                                                                               @if($roleColor)

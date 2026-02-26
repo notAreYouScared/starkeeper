@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\DiscordController;
+use App\Http\Controllers\MemberProfileController;
 use App\Http\Controllers\OrgHierarchyController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,11 @@ Route::get('/charter', function () {
     $page = \App\Models\ContentPage::where('slug', 'charter')->first();
     return view('charter', compact('page'));
 })->name('charter');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/members/{member}', [MemberProfileController::class, 'show'])
+        ->name('member.profile');
+});
 
 Route::middleware('guest')->group(function () {
     Route::get('/auth/discord/redirect', [DiscordController::class, 'redirect'])
