@@ -81,7 +81,7 @@
             </div>
 
             @if($categories->isEmpty())
-                <p class="text-sm text-gray-400 italic pl-4">No training categories have been configured yet.</p>
+                <p class="text-sm text-gray-400 italic pl-4">No training data has been recorded for this member yet.</p>
             @else
                 <div class="space-y-5">
                     @foreach($categories as $category)

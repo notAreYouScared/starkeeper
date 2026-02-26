@@ -14,6 +14,9 @@ class MemberProfileController extends Controller
                 $query->orderBy('sort_order');
             },
         ])
+            ->whereHas('subtopics.ratings', function ($query) use ($member) {
+                $query->where('member_id', $member->id);
+            })
             ->orderBy('sort_order')
             ->get();
 
