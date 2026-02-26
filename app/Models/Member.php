@@ -30,4 +30,9 @@ class Member extends Model
             ->withPivot(['team_role_id', 'title', 'sort_order'])
             ->withTimestamps();
     }
+
+    public function trainingRatings(): HasMany
+    {
+        return $this->hasMany(MemberTrainingRating::class);
+    }
 }
