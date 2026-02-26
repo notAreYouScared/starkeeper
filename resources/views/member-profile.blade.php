@@ -169,6 +169,7 @@
                                                         </svg>
                                                     @endif
                                                 @endfor
+                                                    <span class="ml-1 text-xs text-gray-500">{{ number_format($rating, 1) }}</span>
                                             </div>
                                         </div>
                                     @endforeach
