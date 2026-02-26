@@ -19,8 +19,6 @@
                     <span class="text-xl font-bold tracking-wider text-blue-400">Starkeeper Industries</span>
                 </a>
                 <span class="text-gray-500">/</span>
-                <a href="{{ route('org-hierarchy') }}" class="text-sm text-gray-300 hover:text-blue-400 transition-colors">Hierarchy</a>
-                <span class="text-gray-500">/</span>
                 <span class="text-sm text-gray-300">{{ $member->name }}</span>
             </div>
             <nav class="flex items-center gap-4 text-sm">
@@ -171,7 +169,6 @@
                                                         </svg>
                                                     @endif
                                                 @endfor
-                                                <span class="ml-1 text-xs text-gray-500">{{ number_format($rating, 1) }}</span>
                                             </div>
                                         </div>
                                     @endforeach

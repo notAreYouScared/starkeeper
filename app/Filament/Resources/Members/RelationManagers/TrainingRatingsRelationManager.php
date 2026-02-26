@@ -80,7 +80,7 @@ class TrainingRatingsRelationManager extends RelationManager
                 Action::make('add_category')
                     ->label('Add Category')
                     ->icon('heroicon-o-plus')
-                    ->form([
+                    ->schema([
                         Select::make('training_category_id')
                             ->label('Category')
                             ->options(TrainingCategory::orderBy('sort_order')->pluck('name', 'id'))
