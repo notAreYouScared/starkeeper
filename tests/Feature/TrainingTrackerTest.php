@@ -205,6 +205,58 @@ class TrainingTrackerTest extends TestCase
     }
 
 
+    public function test_member_profile_shows_in_training_badge_when_avg_below_4(): void
+    {
+        $user     = User::factory()->create(['is_admin' => false]);
+        $member   = $this->createMember();
+        $category = TrainingCategory::create(['name' => 'Combat', 'sort_order' => 1]);
+        $subtopic = TrainingSubtopic::create(['training_category_id' => $category->id, 'name' => 'Dogfighting', 'sort_order' => 1]);
+
+        MemberTrainingRating::create(['member_id' => $member->id, 'training_subtopic_id' => $subtopic->id, 'rating' => 3.0]);
+
+        $response = $this->actingAs($user)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('In Training');
+        $response->assertDontSee('Certified');
+        $response->assertDontSee('Trainer');
+    }
+
+    public function test_member_profile_shows_certified_badge_when_avg_gte_4(): void
+    {
+        $user     = User::factory()->create(['is_admin' => false]);
+        $member   = $this->createMember();
+        $category = TrainingCategory::create(['name' => 'Combat', 'sort_order' => 1]);
+        $subtopic = TrainingSubtopic::create(['training_category_id' => $category->id, 'name' => 'Dogfighting', 'sort_order' => 1]);
+
+        MemberTrainingRating::create(['member_id' => $member->id, 'training_subtopic_id' => $subtopic->id, 'rating' => 4.0]);
+
+        $response = $this->actingAs($user)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('Certified');
+        $response->assertDontSee('Trainer');
+        $response->assertDontSee('In Training');
+    }
+
+    public function test_member_profile_shows_trainer_badge_when_avg_is_5(): void
+    {
+        $user     = User::factory()->create(['is_admin' => false]);
+        $member   = $this->createMember();
+        $category = TrainingCategory::create(['name' => 'Combat', 'sort_order' => 1]);
+        $subtopic = TrainingSubtopic::create(['training_category_id' => $category->id, 'name' => 'Dogfighting', 'sort_order' => 1]);
+
+        MemberTrainingRating::create(['member_id' => $member->id, 'training_subtopic_id' => $subtopic->id, 'rating' => 5.0]);
+
+        $response = $this->actingAs($user)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('Trainer');
+        $response->assertDontSee('Certified');
+        $response->assertDontSee('In Training');
+    }
+
+
     public function test_member_profile_shows_empty_state_when_no_categories(): void
     {
         $user   = User::factory()->create(['is_admin' => false]);

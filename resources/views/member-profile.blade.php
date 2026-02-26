@@ -87,8 +87,25 @@
                     @foreach($categories as $category)
                         <div class="rounded-xl border border-white/10 bg-white/5 p-5">
                             <div class="flex items-center justify-between gap-4 mb-4">
-                                <h3 class="text-base font-semibold text-white">{{ $category->name }}</h3>
-                                @php $avg = $categoryAverages->get($category->id, 0.0); @endphp
+                                @php
+                                    $avg = $categoryAverages->get($category->id, 0.0);
+                                    if ($avg == 5) {
+                                        $badgeLabel = 'Trainer';
+                                        $badgeClass = 'text-amber-500 bg-amber-500/10 ring-amber-500/30';
+                                    } elseif ($avg >= 4) {
+                                        $badgeLabel = 'Certified';
+                                        $badgeClass = 'text-green-500 bg-green-500/10 ring-green-500/30';
+                                    } else {
+                                        $badgeLabel = 'In Training';
+                                        $badgeClass = 'text-blue-500 bg-blue-500/10 ring-blue-500/30';
+                                    }
+                                @endphp
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset {{ $badgeClass }}">
+                                        {{ $badgeLabel }}
+                                    </span>
+                                    <h3 class="text-base font-semibold text-white">{{ $category->name }}</h3>
+                                </div>
                                 <div class="flex items-center gap-1 shrink-0" aria-label="Overall {{ number_format($avg, 1) }} out of 5 stars">
                                     <span class="text-xs text-gray-400 mr-0.5">Overall:</span>
                                     @for($i = 1; $i <= 5; $i++)
