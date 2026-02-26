@@ -59,7 +59,7 @@
                 <div>
                     <h1 class="text-2xl font-bold text-white">{{ $member->name }}</h1>
                     @if($member->handle)
-                        <p class="text-sm text-gray-400 mt-0.5">@{{ $member->handle }}</p>
+                        <p class="text-sm text-gray-400 mt-0.5">{{ '@'.$member->handle }}</p>
                     @endif
                     @if($member->title)
                         <span class="mt-2 inline-block text-xs font-medium text-blue-400 bg-blue-400/10 px-3 py-1 rounded-full">
