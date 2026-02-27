@@ -65,6 +65,12 @@ class TrainingTrackerTest extends TestCase
             'sort_order'           => 1,
         ]);
 
+        MemberTrainingRating::create([
+            'member_id'            => $member->id,
+            'training_subtopic_id' => $subtopic->id,
+            'rating'               => 3.0,
+        ]);
+
         $response = $this->actingAs($user)->get(route('member.profile', $member));
 
         $response->assertStatus(200);
@@ -185,7 +191,7 @@ class TrainingTrackerTest extends TestCase
         $response->assertSee('3.5');
     }
 
-    public function test_member_profile_shows_zero_overall_when_no_ratings(): void
+    public function test_member_profile_does_not_show_categories_without_member_ratings(): void
     {
         $user     = User::factory()->create(['is_admin' => false]);
         $member   = $this->createMember();
@@ -199,9 +205,9 @@ class TrainingTrackerTest extends TestCase
         $response = $this->actingAs($user)->get(route('member.profile', $member));
 
         $response->assertStatus(200);
-        $response->assertSee('Overall:');
-        // No ratings → 0.0
-        $response->assertSee('0.0');
+        $response->assertDontSee('Logistics');
+        $response->assertDontSee('Overall:');
+        $response->assertSee('No training data has been recorded for this member yet.');
     }
 
 
@@ -265,7 +271,7 @@ class TrainingTrackerTest extends TestCase
         $response = $this->actingAs($user)->get(route('member.profile', $member));
 
         $response->assertStatus(200);
-        $response->assertSee('No training categories have been configured yet');
+        $response->assertSee('No training data has been recorded for this member yet.');
     }
 
     public function test_subtopic_description_is_stored_and_shown_as_tooltip(): void
@@ -273,11 +279,17 @@ class TrainingTrackerTest extends TestCase
         $user     = User::factory()->create(['is_admin' => false]);
         $member   = $this->createMember();
         $category = TrainingCategory::create(['name' => 'Ship Mining', 'sort_order' => 1]);
-        TrainingSubtopic::create([
+        $subtopic = TrainingSubtopic::create([
             'training_category_id' => $category->id,
             'name'                 => 'Mining head operation',
             'description'          => 'Knows how to properly charge and fire the mining head.',
             'sort_order'           => 1,
+        ]);
+
+        MemberTrainingRating::create([
+            'member_id'            => $member->id,
+            'training_subtopic_id' => $subtopic->id,
+            'rating'               => 3.0,
         ]);
 
         $response = $this->actingAs($user)->get(route('member.profile', $member));

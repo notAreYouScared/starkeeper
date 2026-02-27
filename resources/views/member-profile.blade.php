@@ -42,15 +42,25 @@
 
     <main class="mx-auto max-w-5xl px-4 py-10 space-y-8">
 
+        @php
+            $roleAccents = [
+                'leadership' => ['bar' => 'bg-yellow-400', 'text' => 'text-yellow-400', 'border' => 'border-yellow-400/30', 'bg' => 'bg-yellow-400/5', 'avatar' => 'bg-yellow-400/20 text-yellow-400'],
+                'director'   => ['bar' => 'bg-blue-400',   'text' => 'text-blue-400',   'border' => 'border-blue-400/30',   'bg' => 'bg-blue-400/5',   'avatar' => 'bg-blue-400/20 text-blue-400'],
+                'mod'        => ['bar' => 'bg-green-400',  'text' => 'text-green-400',  'border' => 'border-green-400/30',  'bg' => 'bg-green-400/5',  'avatar' => 'bg-green-400/20 text-green-400'],
+            ];
+            $defaultAccent = ['bar' => 'bg-gray-400', 'text' => 'text-gray-300', 'border' => 'border-white/10', 'bg' => 'bg-white/5', 'avatar' => 'bg-gray-600 text-gray-300'];
+            $accent = $roleAccents[$member->orgRole?->name ?? ''] ?? $defaultAccent;
+        @endphp
+
         {{-- ─── Member Card ─── --}}
-        <section class="rounded-2xl border border-blue-400/20 bg-blue-400/5 p-6">
+        <section class="rounded-2xl border {{ $accent['border'] }} {{ $accent['bg'] }} p-6">
             <div class="flex items-center gap-5">
                 @if($member->avatar_url)
                     <img src="{{ $member->avatar_url }}"
                          alt="{{ $member->name }}"
-                         class="h-20 w-20 shrink-0 rounded-full object-cover border-2 border-blue-400/30">
+                         class="h-20 w-20 shrink-0 rounded-full object-cover border-2 {{ $accent['border'] }}">
                 @else
-                    <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-blue-400/20 text-blue-400 font-bold text-2xl border-2 border-blue-400/30">
+                    <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full {{ $accent['avatar'] }} font-bold text-2xl border-2 {{ $accent['border'] }}">
                         {{ strtoupper(substr($member->name, 0, 2)) }}
                     </div>
                 @endif
@@ -60,12 +70,12 @@
                         <p class="text-sm text-gray-400 mt-0.5">{{ '@'.$member->handle }}</p>
                     @endif
                     @if($member->title)
-                        <span class="mt-2 inline-block text-xs font-medium text-blue-400 bg-blue-400/10 px-3 py-1 rounded-full">
+                        <span class="mt-2 inline-block text-xs font-medium {{ $accent['text'] }} bg-white/5 px-3 py-1 rounded-full">
                             {{ $member->title }}
                         </span>
                     @endif
                     @if($member->orgRole)
-                        <span class="mt-2 ml-2 inline-block text-xs font-medium text-gray-300 bg-white/5 px-3 py-1 rounded-full">
+                        <span class="mt-2 ml-2 inline-block text-xs font-medium {{ $accent['text'] }} bg-white/5 px-3 py-1 rounded-full">
                             {{ $member->orgRole->label }}
                         </span>
                     @endif
@@ -76,12 +86,12 @@
         {{-- ─── Training Tracker ─── --}}
         <section>
             <div class="flex items-center gap-3 mb-5">
-                <div class="h-8 w-1 rounded bg-blue-400"></div>
-                <h2 class="text-xl font-bold tracking-widest uppercase text-blue-400">Training Tracker</h2>
+                <div class="h-8 w-1 rounded {{ $accent['bar'] }}"></div>
+                <h2 class="text-xl font-bold tracking-widest uppercase {{ $accent['text'] }}">Training Tracker</h2>
             </div>
 
             @if($categories->isEmpty())
-                <p class="text-sm text-gray-400 italic pl-4">No training categories have been configured yet.</p>
+                <p class="text-sm text-gray-400 italic pl-4">No training data has been recorded for this member yet.</p>
             @else
                 <div class="space-y-5">
                     @foreach($categories as $category)
