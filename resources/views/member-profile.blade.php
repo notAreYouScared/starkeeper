@@ -86,8 +86,8 @@
         {{-- ─── Training Tracker ─── --}}
         <section>
             <div class="flex items-center gap-3 mb-5">
-                <div class="h-8 w-1 rounded {{ $accent['bar'] }}"></div>
-                <h2 class="text-xl font-bold tracking-widest uppercase {{ $accent['text'] }}">Training Tracker</h2>
+                <div class="h-8 w-1 rounded bg-blue-400"></div>
+                <h2 class="text-xl font-bold tracking-widest uppercase text-blue-400">Training Tracker</h2>
             </div>
 
             @if($categories->isEmpty())
