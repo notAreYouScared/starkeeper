@@ -18,25 +18,33 @@ class DiscordController extends Controller
     public function callback()
     {
         $discordUser = Socialite::driver('discord')->user();
+        $user = User::where('email', $discordUser->getEmail())->first();
 
-        $user = User::updateOrCreate(
-            ['discord_id' => $discordUser->getId()],
-            [
-                'name'   => $discordUser->getName() ?? $discordUser->getNickname(),
-                'email'  => $discordUser->getEmail(),
-                'avatar' => $discordUser->getAvatar(),
-            ]
-        );
+        if ($user) {
+            $user->update([
+                'avatar'     => $discordUser->getAvatar(),
+            ]);
 
-        Member::updateOrCreate(
-            ['discord_id' => $discordUser->getId()],
-            [
+            $member = Member::where('discord_id', $discordUser->getId())->first();
+            $member?->update([
+                'avatar_url' => $discordUser->getAvatar(),
+            ]);
+        } else {
+            $user = User::create([
+                'discord_id' => $discordUser->getId(),
+                'name'       => $discordUser->getName() ?? $discordUser->getNickname(),
+                'email'      => $discordUser->getEmail(),
+                'avatar'     => $discordUser->getAvatar(),
+            ]);
+
+            Member::create([
+                'discord_id'  => $discordUser->getId(),
                 'name'        => $discordUser->getName() ?? $discordUser->getNickname(),
                 'handle'      => $discordUser->getNickname(),
                 'avatar_url'  => $discordUser->getAvatar(),
                 'profile_url' => 'discord://-/users/' . $discordUser->getId(),
-            ]
-        );
+            ]);
+        }
 
         Auth::login($user, remember: true);
 
