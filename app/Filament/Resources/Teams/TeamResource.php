@@ -23,12 +23,12 @@ class TeamResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Organisation';
+        return 'Team';
     }
 
     public static function getNavigationSort(): ?int
     {
-        return 3;
+        return 0;
     }
 
     public static function form(Schema $schema): Schema

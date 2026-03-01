@@ -8,7 +8,7 @@
 </head>
 <body class="min-h-full bg-gray-950 text-gray-100 antialiased">
 
-    <x-nav active-page="org-hierarchy" breadcrumb="Hierarchy" />
+    <x-nav active-page="hierarchy" breadcrumb="Hierarchy" />
 
     <main class="mx-auto max-w-5xl px-4 py-10 space-y-10">
 

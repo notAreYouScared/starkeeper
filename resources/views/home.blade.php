@@ -57,7 +57,7 @@
         <section>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-                <a href="{{ route('org-hierarchy') }}"
+                <a href="{{ route('hierarchy') }}"
                    class="group flex flex-col gap-2 rounded-xl border border-blue-400/20 bg-blue-400/5 hover:bg-blue-400/10 hover:border-blue-400/40 p-5 transition-colors">
                     <span class="text-blue-400">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Auth\DiscordController;
 use App\Http\Controllers\MemberProfileController;
-use App\Http\Controllers\OrgHierarchyController;
+use App\Http\Controllers\HierarchyController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -10,8 +10,8 @@ Route::get('/', function () {
     return view('home', compact('page'));
 })->name('home');
 
-Route::get('/org-hierarchy', [OrgHierarchyController::class, 'index'])
-    ->name('org-hierarchy');
+Route::get('/hierarchy', [HierarchyController::class, 'index'])
+    ->name('hierarchy');
 
 Route::get('/history', function () {
     $page = \App\Models\ContentPage::where('slug', 'history')->first();

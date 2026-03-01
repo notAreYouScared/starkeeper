@@ -34,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::hex('#3b82f6'), // Star Citizen blue
             ])
-            ->brandName('StarKeeper')
+            ->brandName('Starkeeper Industries')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -42,9 +42,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('Hierarchy')
-                    ->url(fn () => route('org-hierarchy'))
+                    ->url(fn () => route('hierarchy'))
                     ->icon(Heroicon::OutlinedBuildingOffice2)
-                    ->group('Organisation')
                     ->sort(10),
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')

@@ -12,6 +12,7 @@ class MemberForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(3)
             ->components([
                 TextInput::make('name')
                     ->label('Display Name')

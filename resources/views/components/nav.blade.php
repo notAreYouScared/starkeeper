@@ -3,7 +3,7 @@
 @php
     $navLinks = [
         'home'          => ['route' => 'home',          'label' => 'Home'],
-        'org-hierarchy' => ['route' => 'org-hierarchy', 'label' => 'Hierarchy'],
+        'hierarchy'     => ['route' => 'hierarchy', 'label' => 'Hierarchy'],
         'history'       => ['route' => 'history',       'label' => 'History'],
         'manifesto'     => ['route' => 'manifesto',     'label' => 'Manifesto'],
         'charter'       => ['route' => 'charter',       'label' => 'Charter'],

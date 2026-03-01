@@ -24,7 +24,7 @@ class TeamRoleResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Organisation';
+        return 'Team';
     }
 
     public static function getNavigationSort(): ?int

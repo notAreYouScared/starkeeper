@@ -6,7 +6,7 @@ use App\Models\Member;
 use App\Models\OrgRole;
 use App\Models\Unit;
 
-class OrgHierarchyController extends Controller
+class HierarchyController extends Controller
 {
     public function index()
     {
@@ -33,6 +33,6 @@ class OrgHierarchyController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('org-hierarchy', compact('membersByRole', 'units'));
+        return view('hierarchy', compact('membersByRole', 'units'));
     }
 }
