@@ -10,7 +10,7 @@ class TrainingCategory extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'sort_order'];
+    protected $fillable = ['name', 'sort_order', 'image'];
 
     public function subtopics(): HasMany
     {

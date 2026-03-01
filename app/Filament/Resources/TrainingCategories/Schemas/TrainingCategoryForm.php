@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TrainingCategories\Schemas;
 
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -15,6 +16,14 @@ class TrainingCategoryForm
                     ->label('Category Name')
                     ->required()
                     ->maxLength(255),
+
+                FileUpload::make('image')
+                    ->label('Category Image')
+                    ->image()
+                    ->disk('public')
+                    ->directory('training-category-images')
+                    ->imagePreviewHeight('80')
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']),
 
                 TextInput::make('sort_order')
                     ->label('Sort Order')

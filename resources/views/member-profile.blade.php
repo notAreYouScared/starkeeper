@@ -111,6 +111,11 @@
                                     }
                                 @endphp
                                 <div class="flex items-center gap-2">
+                                    @if($category->image)
+                                        <img src="{{ Storage::disk('public')->url($category->image) }}"
+                                             alt="{{ $category->name }}"
+                                             class="h-18 w-18 shrink-0 rounded object-cover">
+                                    @endif
                                     <h3 class="text-base font-semibold text-white">{{ $category->name }}</h3>
                                     <span class="inline-flex items-center rounded-full px-2 py-0.5 ring-1 ring-inset text-xs {{ $badgeClass }}">
                                         {{ $badgeLabel }}
@@ -199,6 +204,15 @@
                                                     <span class="ml-1 text-xs text-gray-500">{{ number_format($rating, 1) }}</span>
                                             </div>
                                         </div>
+                                        @php $ratingNote = $notesData->get($subtopic->id); @endphp
+                                        @if($ratingNote && $ratingNote->note)
+                                            <div class="mt-1.5 border-l-2 border-blue-800/50 pl-3">
+                                                <p class="text-xs text-gray-400 italic">{{ $ratingNote->note }}</p>
+                                                @if($ratingNote->noteAuthor)
+                                                    <p class="text-xs text-gray-600 mt-0.5">— {{ $ratingNote->noteAuthor->name }}</p>
+                                                @endif
+                                            </div>
+                                        @endif
                                     @endforeach
                                 </div>
                             @endif

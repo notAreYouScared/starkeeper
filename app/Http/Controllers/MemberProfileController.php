@@ -23,6 +23,18 @@ class MemberProfileController extends Controller
         $ratings = $member->trainingRatings()
             ->pluck('rating', 'training_subtopic_id');
 
+        // auth middleware on this route guarantees auth()->user() is non-null
+        $canViewNotes = auth()->user()->is_admin
+            || ($member->discord_id && auth()->user()->discord_id === $member->discord_id);
+
+        $notesData = $canViewNotes
+            ? $member->trainingRatings()
+                ->with('noteAuthor')
+                ->whereNotNull('note')
+                ->get()
+                ->keyBy('training_subtopic_id')
+            : collect();
+
         $categoryAverages = $categories->mapWithKeys(function ($category) use ($ratings) {
             $subtopicIds = $category->subtopics->pluck('id');
             $categoryRatings = $ratings->only($subtopicIds);
@@ -30,6 +42,6 @@ class MemberProfileController extends Controller
             return [$category->id => $categoryRatings->isNotEmpty() ? (float) $categoryRatings->avg() : 0.0];
         });
 
-        return view('member-profile', compact('member', 'categories', 'ratings', 'categoryAverages'));
+        return view('member-profile', compact('member', 'categories', 'ratings', 'categoryAverages', 'notesData'));
     }
 }
