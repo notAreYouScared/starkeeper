@@ -111,6 +111,11 @@
                                     }
                                 @endphp
                                 <div class="flex items-center gap-2">
+                                    @if($category->image)
+                                        <img src="{{ Storage::disk('public')->url($category->image) }}"
+                                             alt="{{ $category->name }}"
+                                             class="h-10 w-10 shrink-0 rounded object-cover">
+                                    @endif
                                     <h3 class="text-base font-semibold text-white">{{ $category->name }}</h3>
                                     <span class="inline-flex items-center rounded-full px-2 py-0.5 ring-1 ring-inset text-xs {{ $badgeClass }}">
                                         {{ $badgeLabel }}
