@@ -10,7 +10,7 @@ class MemberTrainingRating extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['member_id', 'training_subtopic_id', 'rating'];
+    protected $fillable = ['member_id', 'training_subtopic_id', 'rating', 'note', 'note_author_id'];
 
     protected function casts(): array
     {
@@ -27,5 +27,10 @@ class MemberTrainingRating extends Model
     public function subtopic(): BelongsTo
     {
         return $this->belongsTo(TrainingSubtopic::class, 'training_subtopic_id');
+    }
+
+    public function noteAuthor(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\User::class, 'note_author_id');
     }
 }

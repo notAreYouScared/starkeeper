@@ -9,7 +9,9 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -74,6 +76,16 @@ class TrainingRatingsRelationManager extends RelationManager
                     ->label('Rating')
                     ->view('filament.tables.columns.star-rating')
                     ->sortable(),
+
+                TextColumn::make('note')
+                    ->label('Note')
+                    ->placeholder('—')
+                    ->limit(60)
+                    ->tooltip(fn (MemberTrainingRating $record): ?string => $record->note),
+
+                TextColumn::make('noteAuthor.name')
+                    ->label('Note By')
+                    ->placeholder('—'),
             ])
             ->defaultSort('subtopic.category.name')
             ->headerActions([
@@ -105,6 +117,24 @@ class TrainingRatingsRelationManager extends RelationManager
                     }),
             ])
             ->recordActions([
+                EditAction::make('edit_note')
+                    ->label('Edit Note')
+                    ->icon('heroicon-o-pencil-square')
+                    ->schema([
+                        Textarea::make('note')
+                            ->label('Note (max 300 characters)')
+                            ->maxLength(300)
+                            ->rows(3)
+                            ->placeholder('Add a private note visible only to this member...'),
+                    ])
+                    ->using(function (MemberTrainingRating $record, array $data): MemberTrainingRating {
+                        $record->fill([
+                            'note'           => $data['note'] ?: null,
+                            'note_author_id' => auth()->id(),
+                        ])->save();
+
+                        return $record;
+                    }),
                 DeleteAction::make(),
             ])
             ->toolbarActions([

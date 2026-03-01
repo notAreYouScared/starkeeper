@@ -199,6 +199,15 @@
                                                     <span class="ml-1 text-xs text-gray-500">{{ number_format($rating, 1) }}</span>
                                             </div>
                                         </div>
+                                        @php $ratingNote = $notesData->get($subtopic->id); @endphp
+                                        @if($ratingNote && $ratingNote->note)
+                                            <div class="mt-1.5 border-l-2 border-blue-800/50 pl-3">
+                                                <p class="text-xs text-gray-400 italic">{{ $ratingNote->note }}</p>
+                                                @if($ratingNote->noteAuthor)
+                                                    <p class="text-xs text-gray-600 mt-0.5">— {{ $ratingNote->noteAuthor->name }}</p>
+                                                @endif
+                                            </div>
+                                        @endif
                                     @endforeach
                                 </div>
                             @endif
