@@ -396,4 +396,65 @@ class TrainingTrackerTest extends TestCase
 
         $this->assertEquals('training-category-images/test.png', $category->image);
     }
+
+    public function test_non_admin_other_user_cannot_see_notes(): void
+    {
+        $author   = User::factory()->create(['is_admin' => true]);
+        $viewer   = User::factory()->create(['is_admin' => false, 'discord_id' => 'other-discord-id']);
+        $member   = $this->createMember();
+
+        $category = TrainingCategory::create(['name' => 'Navigation', 'sort_order' => 1]);
+        $subtopic = TrainingSubtopic::create([
+            'training_category_id' => $category->id,
+            'name'                 => 'Jump point navigation',
+            'sort_order'           => 1,
+        ]);
+
+        MemberTrainingRating::create([
+            'member_id'            => $member->id,
+            'training_subtopic_id' => $subtopic->id,
+            'rating'               => 3.0,
+            'note'                 => 'This note is private.',
+            'note_author_id'       => $author->id,
+        ]);
+
+        $response = $this->actingAs($viewer)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('This note is private.');
+    }
+
+    public function test_member_owner_can_see_own_notes(): void
+    {
+        $author = User::factory()->create(['is_admin' => true]);
+        $role   = OrgRole::create(['name' => 'pilot', 'label' => 'Pilot', 'sort_order' => 2]);
+        $member = Member::create([
+            'name'        => 'Own Pilot',
+            'handle'      => 'ownpilot',
+            'discord_id'  => 'member-discord-123',
+            'org_role_id' => $role->id,
+            'sort_order'  => 0,
+        ]);
+        $ownerUser = User::factory()->create(['is_admin' => false, 'discord_id' => 'member-discord-123']);
+
+        $category = TrainingCategory::create(['name' => 'Navigation', 'sort_order' => 1]);
+        $subtopic = TrainingSubtopic::create([
+            'training_category_id' => $category->id,
+            'name'                 => 'Jump point navigation',
+            'sort_order'           => 1,
+        ]);
+
+        MemberTrainingRating::create([
+            'member_id'            => $member->id,
+            'training_subtopic_id' => $subtopic->id,
+            'rating'               => 4.0,
+            'note'                 => 'Great progress on jumps.',
+            'note_author_id'       => $author->id,
+        ]);
+
+        $response = $this->actingAs($ownerUser)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('Great progress on jumps.');
+    }
 }

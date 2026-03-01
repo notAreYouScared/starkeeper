@@ -23,11 +23,17 @@ class MemberProfileController extends Controller
         $ratings = $member->trainingRatings()
             ->pluck('rating', 'training_subtopic_id');
 
-        $notesData = $member->trainingRatings()
-            ->with('noteAuthor')
-            ->whereNotNull('note')
-            ->get()
-            ->keyBy('training_subtopic_id');
+        // auth middleware on this route guarantees auth()->user() is non-null
+        $canViewNotes = auth()->user()->is_admin
+            || ($member->discord_id && auth()->user()->discord_id === $member->discord_id);
+
+        $notesData = $canViewNotes
+            ? $member->trainingRatings()
+                ->with('noteAuthor')
+                ->whereNotNull('note')
+                ->get()
+                ->keyBy('training_subtopic_id')
+            : collect();
 
         $categoryAverages = $categories->mapWithKeys(function ($category) use ($ratings) {
             $subtopicIds = $category->subtopics->pluck('id');
