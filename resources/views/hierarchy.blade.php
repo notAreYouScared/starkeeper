@@ -45,12 +45,7 @@
                                 </div>
                             @endif
                             <div class="min-w-0 flex-1">
-                                @if($member->profile_url)
-                                    <a href="{{ $member->profile_url }}" target="_blank" rel="noopener noreferrer"
-                                       class="font-semibold text-white truncate hover:underline">{{ $member->name }}</a>
-                                @else
                                     <p class="font-semibold text-white truncate">{{ $member->name }}</p>
-                                @endif
                                 @if($member->title)
                                     <span class="mt-1 inline-block text-xs font-medium {{ $accent['text'] }} bg-white/5 px-2 py-0.5 rounded">
                                         {{ $member->title }}
