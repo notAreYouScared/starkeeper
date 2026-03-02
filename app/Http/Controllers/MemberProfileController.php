@@ -4,9 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Models\Member;
 use App\Models\TrainingCategory;
+use Illuminate\Http\Request;
 
 class MemberProfileController extends Controller
 {
+    public function update(Request $request, Member $member)
+    {
+        $user = auth()->user();
+
+        abort_unless(
+            $member->discord_id && $user->discord_id === $member->discord_id,
+            403
+        );
+
+        $validated = $request->validate([
+            'name'       => ['required', 'string', 'max:255'],
+            'rsi_handle' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $member->update([
+            'name'       => $validated['name'],
+            'rsi_handle' => $validated['rsi_handle'] ?? null,
+        ]);
+
+        return redirect()->route('member.profile', $member)
+            ->with('status', 'Profile updated successfully.');
+    }
+
     public function show(Member $member)
     {
         $categories = TrainingCategory::with([
@@ -42,6 +66,8 @@ class MemberProfileController extends Controller
             return [$category->id => $categoryRatings->isNotEmpty() ? (float) $categoryRatings->avg() : 0.0];
         });
 
-        return view('member-profile', compact('member', 'categories', 'ratings', 'categoryAverages', 'notesData'));
+        $canEditName = $member->discord_id && auth()->user()->discord_id === $member->discord_id;
+
+        return view('member-profile', compact('member', 'categories', 'ratings', 'categoryAverages', 'notesData', 'canEditName'));
     }
 }

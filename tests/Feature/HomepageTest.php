@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Member;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -77,5 +78,35 @@ class HomepageTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewIs('home');
+    }
+
+    public function test_authenticated_user_with_linked_member_sees_my_profile_link(): void
+    {
+        $user = User::factory()->create(['is_admin' => false, 'discord_id' => 'discord-abc']);
+        $member = Member::create(['name' => 'Test Member', 'handle' => 'testmember', 'discord_id' => 'discord-abc', 'sort_order' => 0]);
+
+        $response = $this->actingAs($user)->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('My Profile');
+        $response->assertSee(route('member.profile', $member), false);
+    }
+
+    public function test_authenticated_user_without_linked_member_does_not_see_my_profile_link(): void
+    {
+        $user = User::factory()->create(['is_admin' => false, 'discord_id' => 'discord-no-member']);
+
+        $response = $this->actingAs($user)->get('/');
+
+        $response->assertStatus(200);
+        $response->assertDontSee('My Profile');
+    }
+
+    public function test_guest_does_not_see_my_profile_link(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertDontSee('My Profile');
     }
 }

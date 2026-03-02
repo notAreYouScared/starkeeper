@@ -31,6 +31,8 @@ Route::get('/charter', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/members/{member}', [MemberProfileController::class, 'show'])
         ->name('member.profile');
+    Route::patch('/members/{member}', [MemberProfileController::class, 'update'])
+        ->name('member.profile.update');
 });
 
 Route::middleware('guest')->group(function () {

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Member;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 
@@ -18,5 +20,13 @@ class AppServiceProvider extends ServiceProvider
             SocialiteWasCalled::class,
             \SocialiteProviders\Discord\DiscordExtendSocialite::class
         );
+
+        View::composer('components.nav', function ($view) {
+            $user = auth()->user();
+            $myMember = ($user && $user->discord_id)
+                ? Member::where('discord_id', $user->discord_id)->first()
+                : null;
+            $view->with('myMember', $myMember);
+        });
     }
 }

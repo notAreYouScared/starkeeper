@@ -457,4 +457,161 @@ class TrainingTrackerTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Great progress on jumps.');
     }
+
+    private function createMemberWithOwner(): array
+    {
+        $role = OrgRole::create(['name' => 'pilot', 'label' => 'Pilot', 'sort_order' => 2]);
+        $member = Member::create([
+            'name'        => 'Original Name',
+            'handle'      => 'pilothandle',
+            'discord_id'  => 'owner-discord-456',
+            'org_role_id' => $role->id,
+            'sort_order'  => 0,
+        ]);
+        $ownerUser = User::factory()->create(['is_admin' => false, 'discord_id' => 'owner-discord-456']);
+
+        return [$member, $ownerUser];
+    }
+
+    public function test_member_owner_sees_name_edit_form_on_profile(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+
+        $response = $this->actingAs($ownerUser)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('name="name"', false);
+        $response->assertSee('Save');
+    }
+
+    public function test_non_owner_does_not_see_name_edit_form(): void
+    {
+        [$member] = $this->createMemberWithOwner();
+        $otherUser = User::factory()->create(['is_admin' => false, 'discord_id' => 'different-discord']);
+
+        $response = $this->actingAs($otherUser)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee($member->name);
+        $response->assertDontSee('name="name"', false);
+    }
+
+    public function test_member_owner_can_update_display_name(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+
+        $response = $this->actingAs($ownerUser)
+            ->patch(route('member.profile.update', $member), ['name' => 'New Display Name']);
+
+        $response->assertRedirect(route('member.profile', $member));
+        $this->assertDatabaseHas('members', ['id' => $member->id, 'name' => 'New Display Name']);
+    }
+
+    public function test_non_owner_cannot_update_display_name(): void
+    {
+        [$member] = $this->createMemberWithOwner();
+        $otherUser = User::factory()->create(['is_admin' => false, 'discord_id' => 'different-discord']);
+
+        $response = $this->actingAs($otherUser)
+            ->patch(route('member.profile.update', $member), ['name' => 'Hacked Name']);
+
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('members', ['id' => $member->id, 'name' => 'Original Name']);
+    }
+
+    public function test_name_update_requires_non_empty_name(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+
+        $response = $this->actingAs($ownerUser)
+            ->patch(route('member.profile.update', $member), ['name' => '']);
+
+        $response->assertSessionHasErrors('name');
+        $this->assertDatabaseHas('members', ['id' => $member->id, 'name' => 'Original Name']);
+    }
+
+    public function test_unauthenticated_user_cannot_update_display_name(): void
+    {
+        [$member] = $this->createMemberWithOwner();
+
+        $response = $this->patch(route('member.profile.update', $member), ['name' => 'Hacked Name']);
+
+        $response->assertRedirect();
+        $this->assertStringContainsString('login', $response->headers->get('Location'));
+    }
+
+    public function test_member_owner_can_set_rsi_handle(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+
+        $response = $this->actingAs($ownerUser)
+            ->patch(route('member.profile.update', $member), [
+                'name'       => $member->name,
+                'rsi_handle' => 'StarCitizen123',
+            ]);
+
+        $response->assertRedirect(route('member.profile', $member));
+        $this->assertDatabaseHas('members', ['id' => $member->id, 'rsi_handle' => 'StarCitizen123']);
+    }
+
+    public function test_member_owner_can_clear_rsi_handle(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+        $member->update(['rsi_handle' => 'OldHandle']);
+
+        $response = $this->actingAs($ownerUser)
+            ->patch(route('member.profile.update', $member), [
+                'name'       => $member->name,
+                'rsi_handle' => '',
+            ]);
+
+        $response->assertRedirect(route('member.profile', $member));
+        $this->assertDatabaseHas('members', ['id' => $member->id, 'rsi_handle' => null]);
+    }
+
+    public function test_profile_shows_rsi_link_when_handle_is_set(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+        $member->update(['rsi_handle' => 'StarCitizen123']);
+
+        $response = $this->actingAs($ownerUser)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('https://robertsspaceindustries.com/en/citizens/StarCitizen123', false);
+        $response->assertSee('RSI Profile');
+    }
+
+    public function test_profile_does_not_show_rsi_link_when_handle_is_not_set(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+
+        $response = $this->actingAs($ownerUser)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('RSI Profile');
+        $response->assertDontSee('robertsspaceindustries.com', false);
+    }
+
+    public function test_non_owner_sees_rsi_link_when_handle_is_set(): void
+    {
+        [$member] = $this->createMemberWithOwner();
+        $member->update(['rsi_handle' => 'SomeCitizen']);
+        $viewer = User::factory()->create(['is_admin' => false, 'discord_id' => 'viewer-discord']);
+
+        $response = $this->actingAs($viewer)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('https://robertsspaceindustries.com/en/citizens/SomeCitizen', false);
+        $response->assertSee('RSI Profile');
+    }
+
+    public function test_owner_sees_rsi_handle_input_on_profile(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+
+        $response = $this->actingAs($ownerUser)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('name="rsi_handle"', false);
+    }
 }

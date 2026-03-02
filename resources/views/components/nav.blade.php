@@ -36,6 +36,10 @@
                     </a>
                 @endforeach
                 @auth
+                    @if($myMember ?? null)
+                        <a href="{{ route('member.profile', $myMember) }}"
+                           class="text-gray-300 hover:text-blue-400 transition-colors">My Profile</a>
+                    @endif
                     <a href="{{ route('filament.admin.pages.dashboard') }}"
                        class="text-sm text-blue-400 hover:text-blue-300 transition-colors">Admin Panel →</a>
                 @else
@@ -67,6 +71,10 @@
                 </a>
             @endforeach
             @auth
+                @if($myMember ?? null)
+                    <a href="{{ route('member.profile', $myMember) }}"
+                       class="px-3 py-2 rounded-lg text-gray-300 hover:text-blue-400 hover:bg-white/5 transition-colors">My Profile</a>
+                @endif
                 <a href="{{ route('filament.admin.pages.dashboard') }}"
                    class="px-3 py-2 rounded-lg text-blue-400 hover:text-blue-300 hover:bg-white/5 transition-colors">Admin Panel →</a>
             @else
