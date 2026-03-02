@@ -39,22 +39,45 @@
                         @if(session('status'))
                             <p class="text-xs text-green-400 mb-1">{{ session('status') }}</p>
                         @endif
-                        <form method="POST" action="{{ route('member.profile.update', $member) }}" class="flex items-center gap-2 mb-1">
+                        <form method="POST" action="{{ route('member.profile.update', $member) }}" class="space-y-2">
                             @csrf
                             @method('PATCH')
-                            <input type="text" name="name" value="{{ old('name', $member->name) }}"
-                                   class="bg-transparent text-2xl font-bold text-white border-b border-white/30 focus:border-white/70 focus:outline-none outline-none w-auto"
-                                   aria-label="Display name">
-                            <button type="submit" class="text-xs text-gray-400 hover:text-white transition-colors">Save</button>
+                            <div class="flex items-center gap-2 mb-1">
+                                <input type="text" name="name" value="{{ old('name', $member->name) }}"
+                                       class="bg-transparent text-2xl font-bold text-white border-b border-white/30 focus:border-white/70 focus:outline-none outline-none w-auto"
+                                       aria-label="Display name">
+                                <button type="submit" class="text-xs text-gray-400 hover:text-white transition-colors">Save</button>
+                            </div>
+                            @error('name')
+                                <p class="text-xs text-red-400 mb-1">{{ $message }}</p>
+                            @enderror
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-xs text-gray-500">RSI:</span>
+                                <input type="text" name="rsi_handle" value="{{ old('rsi_handle', $member->rsi_handle) }}"
+                                       placeholder="Your RSI citizen handle"
+                                       class="bg-transparent text-sm text-gray-300 border-b border-white/20 focus:border-white/50 focus:outline-none outline-none w-48"
+                                       aria-label="RSI citizen handle">
+                            </div>
+                            @error('rsi_handle')
+                                <p class="text-xs text-red-400">{{ $message }}</p>
+                            @enderror
                         </form>
-                        @error('name')
-                            <p class="text-xs text-red-400 mb-1">{{ $message }}</p>
-                        @enderror
                     @else
                         <h1 class="text-2xl font-bold text-white">{{ $member->name }}</h1>
                     @endif
                     @if($member->handle)
                         <p class="text-sm text-gray-400 mt-0.5">{{ '@'.$member->handle }}</p>
+                    @endif
+                    @if($member->rsi_handle)
+                        <a href="https://robertsspaceindustries.com/en/citizens/{{ $member->rsi_handle }}"
+                           target="_blank" rel="noopener noreferrer"
+                           class="mt-1 inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 transition-colors">
+                            <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
+                                <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
+                            </svg>
+                            RSI Profile
+                        </a>
                     @endif
                     @if($member->title)
                         <span class="mt-2 inline-block text-xs font-medium {{ $accent['text'] }} bg-white/5 px-3 py-1 rounded-full">

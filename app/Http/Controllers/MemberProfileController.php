@@ -18,13 +18,17 @@ class MemberProfileController extends Controller
         );
 
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name'       => ['required', 'string', 'max:255'],
+            'rsi_handle' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $member->update(['name' => $validated['name']]);
+        $member->update([
+            'name'       => $validated['name'],
+            'rsi_handle' => $validated['rsi_handle'] ?? null,
+        ]);
 
         return redirect()->route('member.profile', $member)
-            ->with('status', 'Name updated successfully.');
+            ->with('status', 'Profile updated successfully.');
     }
 
     public function show(Member $member)

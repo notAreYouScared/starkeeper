@@ -539,4 +539,79 @@ class TrainingTrackerTest extends TestCase
         $response->assertRedirect();
         $this->assertStringContainsString('login', $response->headers->get('Location'));
     }
+
+    public function test_member_owner_can_set_rsi_handle(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+
+        $response = $this->actingAs($ownerUser)
+            ->patch(route('member.profile.update', $member), [
+                'name'       => $member->name,
+                'rsi_handle' => 'StarCitizen123',
+            ]);
+
+        $response->assertRedirect(route('member.profile', $member));
+        $this->assertDatabaseHas('members', ['id' => $member->id, 'rsi_handle' => 'StarCitizen123']);
+    }
+
+    public function test_member_owner_can_clear_rsi_handle(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+        $member->update(['rsi_handle' => 'OldHandle']);
+
+        $response = $this->actingAs($ownerUser)
+            ->patch(route('member.profile.update', $member), [
+                'name'       => $member->name,
+                'rsi_handle' => '',
+            ]);
+
+        $response->assertRedirect(route('member.profile', $member));
+        $this->assertDatabaseHas('members', ['id' => $member->id, 'rsi_handle' => null]);
+    }
+
+    public function test_profile_shows_rsi_link_when_handle_is_set(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+        $member->update(['rsi_handle' => 'StarCitizen123']);
+
+        $response = $this->actingAs($ownerUser)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('https://robertsspaceindustries.com/en/citizens/StarCitizen123', false);
+        $response->assertSee('RSI Profile');
+    }
+
+    public function test_profile_does_not_show_rsi_link_when_handle_is_not_set(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+
+        $response = $this->actingAs($ownerUser)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('RSI Profile');
+        $response->assertDontSee('robertsspaceindustries.com', false);
+    }
+
+    public function test_non_owner_sees_rsi_link_when_handle_is_set(): void
+    {
+        [$member] = $this->createMemberWithOwner();
+        $member->update(['rsi_handle' => 'SomeCitizen']);
+        $viewer = User::factory()->create(['is_admin' => false, 'discord_id' => 'viewer-discord']);
+
+        $response = $this->actingAs($viewer)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('https://robertsspaceindustries.com/en/citizens/SomeCitizen', false);
+        $response->assertSee('RSI Profile');
+    }
+
+    public function test_owner_sees_rsi_handle_input_on_profile(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+
+        $response = $this->actingAs($ownerUser)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('name="rsi_handle"', false);
+    }
 }
