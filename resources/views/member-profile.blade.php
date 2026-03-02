@@ -65,9 +65,6 @@
                     @else
                         <h1 class="text-2xl font-bold text-white">{{ $member->name }}</h1>
                     @endif
-                    @if($member->handle)
-                        <p class="text-sm text-gray-400 mt-0.5">{{ '@'.$member->handle }}</p>
-                    @endif
                     @if($member->rsi_handle)
                         <a href="https://robertsspaceindustries.com/en/citizens/{{ $member->rsi_handle }}"
                            target="_blank" rel="noopener noreferrer"
