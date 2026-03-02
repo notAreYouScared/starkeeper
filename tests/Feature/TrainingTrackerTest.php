@@ -614,4 +614,39 @@ class TrainingTrackerTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('name="rsi_handle"', false);
     }
+
+    public function test_profile_shows_discord_link_when_profile_url_is_set(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+        $member->update(['profile_url' => 'https://discord.com/users/123456789']);
+
+        $response = $this->actingAs($ownerUser)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('https://discord.com/users/123456789', false);
+        $response->assertSee('Discord Profile');
+    }
+
+    public function test_profile_does_not_show_discord_link_when_profile_url_is_not_set(): void
+    {
+        [$member, $ownerUser] = $this->createMemberWithOwner();
+
+        $response = $this->actingAs($ownerUser)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Discord Profile');
+    }
+
+    public function test_non_owner_sees_discord_link_when_profile_url_is_set(): void
+    {
+        [$member] = $this->createMemberWithOwner();
+        $member->update(['profile_url' => 'https://discord.com/users/987654321']);
+        $viewer = User::factory()->create(['is_admin' => false, 'discord_id' => 'viewer-discord-2']);
+
+        $response = $this->actingAs($viewer)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('https://discord.com/users/987654321', false);
+        $response->assertSee('Discord Profile');
+    }
 }
