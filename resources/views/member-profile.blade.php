@@ -35,7 +35,24 @@
                     </div>
                 @endif
                 <div>
-                    <h1 class="text-2xl font-bold text-white">{{ $member->name }}</h1>
+                    @if($canEditName)
+                        @if(session('status'))
+                            <p class="text-xs text-green-400 mb-1">{{ session('status') }}</p>
+                        @endif
+                        <form method="POST" action="{{ route('member.profile.update', $member) }}" class="flex items-center gap-2 mb-1">
+                            @csrf
+                            @method('PATCH')
+                            <input type="text" name="name" value="{{ old('name', $member->name) }}"
+                                   class="bg-transparent text-2xl font-bold text-white border-b border-white/30 focus:border-white/70 focus:outline-none outline-none w-auto"
+                                   aria-label="Display name">
+                            <button type="submit" class="text-xs text-gray-400 hover:text-white transition-colors">Save</button>
+                        </form>
+                        @error('name')
+                            <p class="text-xs text-red-400 mb-1">{{ $message }}</p>
+                        @enderror
+                    @else
+                        <h1 class="text-2xl font-bold text-white">{{ $member->name }}</h1>
+                    @endif
                     @if($member->handle)
                         <p class="text-sm text-gray-400 mt-0.5">{{ '@'.$member->handle }}</p>
                     @endif
