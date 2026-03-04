@@ -5,6 +5,9 @@ namespace App\Filament\Resources\Members\Pages;
 use App\Filament\Resources\Members\MemberResource;
 use App\Models\Member;
 use App\Models\OrgRole;
+use App\Models\Team;
+use App\Models\TeamMember;
+use App\Models\TeamRole;
 use App\Services\DiscordService;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
@@ -58,6 +61,23 @@ class ListMembers extends ListRecords
                                 }
                             });
 
+                        // Build a map of discord_role_id => Team for team membership sync.
+                        // If a member's Discord roles include a Team's discord_role_id they are
+                        // added to that team (upserted as a TeamMember record).
+                        $teamMap = Team::whereNotNull('discord_role_id')
+                            ->where('discord_role_id', '!=', '')
+                            ->get(['id', 'discord_role_id', 'unit_id'])
+                            ->keyBy('discord_role_id');
+
+                        // Build a map of discord_role_id => TeamRole for team role sync.
+                        // When a member belongs to a team in the matching unit, their team_role_id
+                        // is updated. When multiple TeamRoles match for the same unit, the one with
+                        // the lowest sort_order (highest priority) is used.
+                        $teamRoleMap = TeamRole::whereNotNull('discord_role_id')
+                            ->where('discord_role_id', '!=', '')
+                            ->get(['id', 'discord_role_id', 'unit_id', 'sort_order'])
+                            ->keyBy('discord_role_id');
+
                         $created = 0;
                         $updated = 0;
 
@@ -78,6 +98,7 @@ class ListMembers extends ListRecords
                             }
 
                             if ($existing->has($dm['discord_id'])) {
+                                $member = $existing->get($dm['discord_id']);
                                 $updateData = [
                                     'name'       => $displayName,
                                     'avatar_url' => $dm['avatar_url'],
@@ -85,10 +106,10 @@ class ListMembers extends ListRecords
                                 if ($orgRoleId !== null) {
                                     $updateData['org_role_id'] = $orgRoleId;
                                 }
-                                $existing->get($dm['discord_id'])->update($updateData);
+                                $member->update($updateData);
                                 $updated++;
                             } else {
-                                Member::create([
+                                $member = Member::create([
                                     'discord_id'  => $dm['discord_id'],
                                     'name'        => $displayName,
                                     'handle'      => $dm['username'],
@@ -97,6 +118,36 @@ class ListMembers extends ListRecords
                                     'org_role_id' => $orgRoleId,
                                 ]);
                                 $created++;
+                            }
+
+                            // Sync team memberships: add member to any team whose discord_role_id
+                            // matches one of the member's Discord roles.
+                            foreach ($dm['role_ids'] as $discordRoleId) {
+                                if (isset($teamMap[$discordRoleId])) {
+                                    TeamMember::firstOrCreate([
+                                        'team_id'   => $teamMap[$discordRoleId]->id,
+                                        'member_id' => $member->id,
+                                    ]);
+                                }
+                            }
+
+                            // Sync team roles: for each unit, find the highest-priority (lowest
+                            // sort_order) TeamRole matching the member's Discord roles and update
+                            // any TeamMember records for that member within that unit.
+                            $teamRoleByUnit = [];
+                            foreach ($dm['role_ids'] as $discordRoleId) {
+                                if (isset($teamRoleMap[$discordRoleId])) {
+                                    $teamRole = $teamRoleMap[$discordRoleId];
+                                    $unitId   = $teamRole->unit_id;
+                                    if (! isset($teamRoleByUnit[$unitId]) || $teamRole->sort_order < $teamRoleByUnit[$unitId]->sort_order) {
+                                        $teamRoleByUnit[$unitId] = $teamRole;
+                                    }
+                                }
+                            }
+                            foreach ($teamRoleByUnit as $unitId => $teamRole) {
+                                TeamMember::whereHas('team', fn ($q) => $q->where('unit_id', $unitId))
+                                    ->where('member_id', $member->id)
+                                    ->update(['team_role_id' => $teamRole->id]);
                             }
                         }
 
