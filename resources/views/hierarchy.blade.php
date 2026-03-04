@@ -208,6 +208,8 @@
 
     </main>
 
+    <x-footer />
+
 </body>
 </html>
 
