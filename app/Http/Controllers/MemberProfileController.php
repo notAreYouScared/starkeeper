@@ -68,6 +68,8 @@ class MemberProfileController extends Controller
 
         $canEditName = $member->discord_id && auth()->user()->discord_id === $member->discord_id;
 
-        return view('member-profile', compact('member', 'categories', 'ratings', 'categoryAverages', 'notesData', 'canEditName'));
+        $isAdmin = auth()->user()->is_admin;
+
+        return view('member-profile', compact('member', 'categories', 'ratings', 'categoryAverages', 'notesData', 'canEditName', 'isAdmin'));
     }
 }
