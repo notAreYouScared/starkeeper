@@ -17,7 +17,7 @@
             <div class="flex items-center gap-3 min-w-0">
                 <a href="{{ route('home') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity shrink-0">
                     <img src="{{ url('image/logo.png') }}"
-                         alt="StarKeeper Logo"
+                         alt="Starkeeper Logo"
                          class="h-8 w-auto">
                     <span class="text-xl font-bold tracking-wider text-blue-400 hidden sm:inline">Starkeeper Industries</span>
                 </a>
