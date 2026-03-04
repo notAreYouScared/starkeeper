@@ -235,6 +235,7 @@ class DiscordServiceTest extends TestCase
         $this->assertCount(2, $members);
     }
 
+    public function test_get_guild_members_uses_gif_extension_for_animated_avatars(): void
     {
         $member = $this->makeGuildMemberPayload([
             'avatar' => null,
