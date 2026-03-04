@@ -20,7 +20,7 @@ class ListMembers extends ListRecords
     {
         return [
             Action::make('syncDiscordMembers')
-                ->label('Sync Discord Members')
+                ->label('Sync Discord')
                 ->icon('heroicon-o-arrow-path')
                 ->color('gray')
                 ->requiresConfirmation()

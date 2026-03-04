@@ -23,11 +23,6 @@ class MembersTable
                     ->defaultImageUrl(null)
                     ->imageSize(36),
 
-                TextColumn::make('handle')
-                    ->label('RSI Handle')
-                    ->searchable()
-                    ->sortable(),
-
                 TextColumn::make('name')
                     ->label('Name')
                     ->searchable()
@@ -41,12 +36,6 @@ class MembersTable
                 TextColumn::make('orgRole.label')
                     ->label('Org Role')
                     ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'Leadership' => 'warning',
-                        'Director' => 'info',
-                        'Mod' => 'success',
-                        default => 'gray',
-                    })
                     ->sortable(),
 
                 TextInputColumn::make('sort_order')
