@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\OrgRoles\Schemas;
 
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -22,11 +23,10 @@ class OrgRoleForm
                     ->required()
                     ->maxLength(255),
 
-                TextInput::make('discord_role_id')
-                    ->label('Discord Role ID')
-                    ->nullable()
-                    ->maxLength(30)
-                    ->helperText('The Discord snowflake ID for this role. When set, members with this Discord role are automatically assigned this org role during sync.'),
+                TagsInput::make('discord_role_ids')
+                    ->label('Discord Role IDs')
+                    ->placeholder('Add a Discord snowflake ID')
+                    ->helperText('Enter one or more Discord snowflake IDs. Members holding any of these Discord roles are automatically assigned this org role during sync.'),
 
                 TextInput::make('sort_order')
                     ->label('Sort Order')

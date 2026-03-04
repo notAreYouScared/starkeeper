@@ -9,6 +9,14 @@ use Tests\TestCase;
 
 class DiscordServiceTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // Disable the minimum member role filter by default so tests are isolated from production config.
+        // Tests that specifically cover the filter set their own value.
+        config(['services.discord.minimum_member_role_id' => '']);
+    }
+
     private function makeGuildMemberPayload(array $overrides = []): array
     {
         return array_merge([

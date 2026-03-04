@@ -36,13 +36,27 @@ class ListMembers extends ListRecords
                             ->get()
                             ->keyBy('discord_id');
 
-                        // Build a map of discord_role_id => [id, sort_order] for priority-aware lookup.
+                        // Build a flat map of discord_role_id => OrgRole for priority-aware lookup.
+                        // Each OrgRole may declare multiple Discord role IDs (e.g. "Director of Operations"
+                        // and "Director of Flight" both map to the "Director" org role).
                         // When a member holds multiple Discord roles that each map to an org role,
                         // the org role with the lowest sort_order (highest priority) is assigned.
-                        $roleMap = OrgRole::whereNotNull('discord_role_id')
+                        $roleMap = [];
+                        OrgRole::whereNotNull('discord_role_ids')
                             ->orderBy('sort_order')
-                            ->get(['id', 'discord_role_id', 'sort_order'])
-                            ->keyBy('discord_role_id');
+                            ->get(['id', 'discord_role_ids', 'sort_order'])
+                            ->each(function ($orgRole) use (&$roleMap) {
+                                foreach ($orgRole->discord_role_ids ?? [] as $discordRoleId) {
+                                    if ($discordRoleId === '') {
+                                        continue;
+                                    }
+                                    // Only set if this discord role ID isn't already mapped to a
+                                    // higher-priority (lower sort_order) org role
+                                    if (! isset($roleMap[$discordRoleId])) {
+                                        $roleMap[$discordRoleId] = $orgRole;
+                                    }
+                                }
+                            });
 
                         $created = 0;
                         $updated = 0;
@@ -54,8 +68,8 @@ class ListMembers extends ListRecords
                             $orgRoleId = null;
                             $bestSortOrder = PHP_INT_MAX;
                             foreach ($dm['role_ids'] as $discordRoleId) {
-                                if ($roleMap->has($discordRoleId)) {
-                                    $candidate = $roleMap->get($discordRoleId);
+                                if (isset($roleMap[$discordRoleId])) {
+                                    $candidate = $roleMap[$discordRoleId];
                                     if ($candidate->sort_order < $bestSortOrder) {
                                         $orgRoleId = $candidate->id;
                                         $bestSortOrder = $candidate->sort_order;

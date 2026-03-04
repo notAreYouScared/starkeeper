@@ -33,10 +33,10 @@ class SyncDiscordMembersTest extends TestCase
         $this->actingAs($this->adminUser());
 
         $orgRole = OrgRole::create([
-            'name'           => 'pilot',
-            'label'          => 'Pilot',
-            'discord_role_id' => '999888777',
-            'sort_order'     => 1,
+            'name'             => 'pilot',
+            'label'            => 'Pilot',
+            'discord_role_ids' => ['999888777'],
+            'sort_order'       => 1,
         ]);
 
         $this->mockDiscordService([[
@@ -66,7 +66,7 @@ class SyncDiscordMembersTest extends TestCase
             'sort_order' => 0,
         ]);
 
-        $member = Member::create([
+        Member::create([
             'discord_id'  => '111222333',
             'name'        => 'Star Pilot',
             'handle'      => 'starpilot',
@@ -84,7 +84,7 @@ class SyncDiscordMembersTest extends TestCase
         Livewire::test(ListMembers::class)
             ->callAction('syncDiscordMembers');
 
-        // org_role_id should remain unchanged because no discord_role_id matched
+        // org_role_id should remain unchanged because no discord_role_ids matched
         $this->assertDatabaseHas('members', [
             'discord_id'  => '111222333',
             'org_role_id' => $existingRole->id,
@@ -102,10 +102,10 @@ class SyncDiscordMembersTest extends TestCase
         ]);
 
         $newRole = OrgRole::create([
-            'name'           => 'officer',
-            'label'          => 'Officer',
-            'discord_role_id' => '777666555',
-            'sort_order'     => 5,
+            'name'             => 'officer',
+            'label'            => 'Officer',
+            'discord_role_ids' => ['777666555'],
+            'sort_order'       => 5,
         ]);
 
         Member::create([
@@ -137,17 +137,17 @@ class SyncDiscordMembersTest extends TestCase
         $this->actingAs($this->adminUser());
 
         OrgRole::create([
-            'name'           => 'officer',
-            'label'          => 'Officer',
-            'discord_role_id' => 'discord-officer-id',
-            'sort_order'     => 5,
+            'name'             => 'officer',
+            'label'            => 'Officer',
+            'discord_role_ids' => ['discord-officer-id'],
+            'sort_order'       => 5,
         ]);
 
         $seniorRole = OrgRole::create([
-            'name'           => 'commander',
-            'label'          => 'Commander',
-            'discord_role_id' => 'discord-commander-id',
-            'sort_order'     => 1, // lower sort_order = higher priority
+            'name'             => 'commander',
+            'label'            => 'Commander',
+            'discord_role_ids' => ['discord-commander-id'],
+            'sort_order'       => 1, // lower sort_order = higher priority
         ]);
 
         $this->mockDiscordService([[
@@ -186,6 +186,88 @@ class SyncDiscordMembersTest extends TestCase
             'discord_id'  => '123456789',
             'name'        => 'newpilot',
             'org_role_id' => null,
+        ]);
+    }
+
+    public function test_sync_matches_member_when_org_role_has_multiple_discord_role_ids(): void
+    {
+        $this->actingAs($this->adminUser());
+
+        // "Director" org role maps to two different Discord roles
+        $directorRole = OrgRole::create([
+            'name'             => 'director',
+            'label'            => 'Director',
+            'discord_role_ids' => ['director-of-operations-id', 'director-of-flight-id'],
+            'sort_order'       => 2,
+        ]);
+
+        // One member holds the "operations" director discord role
+        $this->mockDiscordService([
+            [
+                'discord_id' => '111111111',
+                'username'   => 'ops_director',
+                'nickname'   => null,
+                'avatar_url' => null,
+                'role_ids'   => ['director-of-operations-id'],
+            ],
+            [
+                'discord_id' => '222222222',
+                'username'   => 'flight_director',
+                'nickname'   => null,
+                'avatar_url' => null,
+                'role_ids'   => ['director-of-flight-id'],
+            ],
+        ]);
+
+        Livewire::test(ListMembers::class)
+            ->callAction('syncDiscordMembers');
+
+        $this->assertDatabaseHas('members', [
+            'discord_id'  => '111111111',
+            'org_role_id' => $directorRole->id,
+        ]);
+
+        $this->assertDatabaseHas('members', [
+            'discord_id'  => '222222222',
+            'org_role_id' => $directorRole->id,
+        ]);
+    }
+
+    public function test_sync_respects_sort_order_when_member_matches_multiple_discord_role_ids_on_different_org_roles(): void
+    {
+        $this->actingAs($this->adminUser());
+
+        // Leadership (highest priority)
+        $leadershipRole = OrgRole::create([
+            'name'             => 'leadership',
+            'label'            => 'Leadership',
+            'discord_role_ids' => ['leadership-discord-id'],
+            'sort_order'       => 1,
+        ]);
+
+        // Director (second)
+        OrgRole::create([
+            'name'             => 'director',
+            'label'            => 'Director',
+            'discord_role_ids' => ['director-of-operations-id', 'director-of-flight-id'],
+            'sort_order'       => 2,
+        ]);
+
+        // Member holds both a director role and leadership — should be assigned leadership
+        $this->mockDiscordService([[
+            'discord_id' => '999999999',
+            'username'   => 'top_dog',
+            'nickname'   => null,
+            'avatar_url' => null,
+            'role_ids'   => ['director-of-operations-id', 'leadership-discord-id'],
+        ]]);
+
+        Livewire::test(ListMembers::class)
+            ->callAction('syncDiscordMembers');
+
+        $this->assertDatabaseHas('members', [
+            'discord_id'  => '999999999',
+            'org_role_id' => $leadershipRole->id,
         ]);
     }
 }
