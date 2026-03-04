@@ -21,9 +21,10 @@ class DiscordServiceTest extends TestCase
     {
         return array_merge([
             'user' => [
-                'id'       => '111222333',
-                'username' => 'starpilot',
-                'avatar'   => 'abc123',
+                'id'          => '111222333',
+                'username'    => 'starpilot',
+                'global_name' => 'Star Pilot Global',
+                'avatar'      => 'abc123',
             ],
             'nick'   => 'Star Pilot',
             'avatar' => null,
@@ -45,6 +46,7 @@ class DiscordServiceTest extends TestCase
         $this->assertCount(1, $members);
         $this->assertEquals('111222333', $members[0]['discord_id']);
         $this->assertEquals('starpilot', $members[0]['username']);
+        $this->assertEquals('Star Pilot Global', $members[0]['display_name']);
         $this->assertEquals('Star Pilot', $members[0]['nickname']);
         $this->assertStringContainsString('abc123', $members[0]['avatar_url']);
         $this->assertEquals(['role-1', 'role-2'], $members[0]['role_ids']);
@@ -258,5 +260,131 @@ class DiscordServiceTest extends TestCase
         $members = $service->getGuildMembers();
 
         $this->assertStringEndsWith('.gif', $members[0]['avatar_url']);
+    }
+
+    public function test_get_user_returns_global_name(): void
+    {
+        Http::fake([
+            'discord.com/api/v10/users/111222333' => Http::response([
+                'id'          => '111222333',
+                'username'    => 'starpilot',
+                'global_name' => 'Star Pilot Global',
+            ], 200),
+        ]);
+
+        $service = new DiscordService();
+        $user = $service->getUser('111222333');
+
+        $this->assertEquals('111222333', $user['id']);
+        $this->assertEquals('starpilot', $user['username']);
+        $this->assertEquals('Star Pilot Global', $user['global_name']);
+    }
+
+    public function test_get_user_returns_null_global_name_when_not_set(): void
+    {
+        Http::fake([
+            'discord.com/api/v10/users/111222333' => Http::response([
+                'id'       => '111222333',
+                'username' => 'starpilot',
+            ], 200),
+        ]);
+
+        $service = new DiscordService();
+        $user = $service->getUser('111222333');
+
+        $this->assertNull($user['global_name']);
+    }
+
+    public function test_get_guild_member_returns_mapped_data(): void
+    {
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members/111222333' => Http::response(
+                $this->makeGuildMemberPayload(), 200
+            ),
+        ]);
+
+        $service = new DiscordService();
+        $member = $service->getGuildMember('111222333');
+
+        $this->assertNotNull($member);
+        $this->assertEquals('111222333', $member['discord_id']);
+        $this->assertEquals('starpilot', $member['username']);
+        $this->assertEquals('Star Pilot', $member['nickname']);
+        // When a nickname is present, no getUser() call is made; display_name stays null
+        $this->assertNull($member['display_name']);
+        $this->assertEquals(['role-1', 'role-2'], $member['role_ids']);
+    }
+
+    public function test_get_guild_member_fetches_global_name_when_no_nickname(): void
+    {
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members/111222333' => Http::response(
+                $this->makeGuildMemberPayload(['nick' => null]), 200
+            ),
+            'discord.com/api/v10/users/111222333' => Http::response([
+                'id'          => '111222333',
+                'username'    => 'starpilot',
+                'global_name' => 'Global Star Pilot',
+            ], 200),
+        ]);
+
+        $service = new DiscordService();
+        $member = $service->getGuildMember('111222333');
+
+        $this->assertNotNull($member);
+        $this->assertNull($member['nickname']);
+        $this->assertEquals('Global Star Pilot', $member['display_name']);
+    }
+
+    public function test_get_guild_member_display_name_is_null_when_no_nickname_and_no_global_name(): void
+    {
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members/111222333' => Http::response(
+                $this->makeGuildMemberPayload(['nick' => null]), 200
+            ),
+            'discord.com/api/v10/users/111222333' => Http::response([
+                'id'       => '111222333',
+                'username' => 'starpilot',
+            ], 200),
+        ]);
+
+        $service = new DiscordService();
+        $member = $service->getGuildMember('111222333');
+
+        $this->assertNotNull($member);
+        $this->assertNull($member['nickname']);
+        $this->assertNull($member['display_name']);
+    }
+
+    public function test_get_guild_member_returns_null_when_not_found(): void
+    {
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members/999999999' => Http::response([], 404),
+        ]);
+
+        $service = new DiscordService();
+        $member = $service->getGuildMember('999999999');
+
+        $this->assertNull($member);
+    }
+
+    public function test_get_guild_member_returns_null_for_bots(): void
+    {
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members/111222333' => Http::response(
+                $this->makeGuildMemberPayload(['user' => [
+                    'id'       => '111222333',
+                    'username' => 'botuser',
+                    'avatar'   => null,
+                    'bot'      => true,
+                ]]),
+                200
+            ),
+        ]);
+
+        $service = new DiscordService();
+        $member = $service->getGuildMember('111222333');
+
+        $this->assertNull($member);
     }
 }

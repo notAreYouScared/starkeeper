@@ -33,6 +33,8 @@ Route::middleware('auth')->group(function () {
         ->name('member.profile');
     Route::patch('/members/{member}', [MemberProfileController::class, 'update'])
         ->name('member.profile.update');
+    Route::post('/members/{member}/sync-discord', [MemberProfileController::class, 'syncFromDiscord'])
+        ->name('member.sync-discord');
 });
 
 Route::middleware('guest')->group(function () {

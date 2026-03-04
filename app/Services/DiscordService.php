@@ -34,6 +34,7 @@ class DiscordService
      * Each entry contains:
      *   - discord_id   (string)
      *   - username     (string)
+     *   - display_name (string|null)  global display name
      *   - nickname     (string|null)  server-specific nickname
      *   - avatar_url   (string|null)
      *   - role_ids     (array)        Discord role IDs the member holds
@@ -82,11 +83,12 @@ class DiscordService
                 }
 
                 $members[] = [
-                    'discord_id' => $userId,
-                    'username'   => $user['username'] ?? '',
-                    'nickname'   => $member['nick'] ?? null,
-                    'avatar_url' => $this->resolveAvatarUrl($userId, $user, $member),
-                    'role_ids'   => $member['roles'] ?? [],
+                    'discord_id'   => $userId,
+                    'username'     => $user['username'] ?? '',
+                    'display_name' => $user['global_name'] ?? null,
+                    'nickname'     => $member['nick'] ?? null,
+                    'avatar_url'   => $this->resolveAvatarUrl($userId, $user, $member),
+                    'role_ids'     => $member['roles'] ?? [],
                 ];
             }
 
@@ -94,6 +96,93 @@ class DiscordService
         } while (count($batch) === 1000);
 
         return $members;
+    }
+
+    /**
+     * Fetch a single Discord user by their ID.
+     *
+     * Returns an array with:
+     *   - id           (string)
+     *   - username     (string)
+     *   - global_name  (string|null)  user's chosen display name across Discord
+     *
+     * @return array<string, mixed>
+     */
+    public function getUser(string $userId): array
+    {
+        $response = Http::withToken($this->botToken, 'Bot')
+            ->get(self::API_BASE . "/users/{$userId}");
+
+        $response->throw();
+
+        $user = $response->json();
+
+        return [
+            'id'          => $user['id'] ?? $userId,
+            'username'    => $user['username'] ?? '',
+            'global_name' => $user['global_name'] ?? null,
+        ];
+    }
+
+    /**
+     * Fetch a single member of the configured Discord guild by their Discord user ID.
+     *
+     * Returns the same structure as individual entries from getGuildMembers(),
+     * or null if the member is not found (404) or is a bot.
+     *
+     * When the member has no server nickname, an additional API call is made to
+     * fetch the user's global display name (global_name) before falling back to
+     * their username.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getGuildMember(string $discordId): ?array
+    {
+        $response = Http::withToken($this->botToken, 'Bot')
+            ->get(self::API_BASE . "/guilds/{$this->guildId}/members/{$discordId}");
+
+        if ($response->status() === 404) {
+            return null;
+        }
+
+        $response->throw();
+
+        $member = $response->json();
+        $user = $member['user'] ?? [];
+
+        if ($user['bot'] ?? false) {
+            return null;
+        }
+
+        $nickname = $member['nick'] ?? null;
+
+        // When there is no server nickname, fetch the user's global display name
+        // via a dedicated API call so we can prefer it over the plain username.
+        $globalName = null;
+        if ($nickname === null) {
+            $userData   = $this->getUser($discordId);
+            $globalName = $userData['global_name'];
+        }
+
+        return [
+            'discord_id'   => $user['id'],
+            'username'     => $user['username'] ?? '',
+            'display_name' => $globalName,
+            'nickname'     => $nickname,
+            'avatar_url'   => $this->resolveAvatarUrl($user['id'], $user, $member),
+            'role_ids'     => $member['roles'] ?? [],
+        ];
+    }
+
+    /**
+     * Resolve the display name for a guild member using the priority:
+     * server nickname → global display name → username.
+     *
+     * @param  array<string, mixed>  $discordMember  An entry from getGuildMembers() or getGuildMember()
+     */
+    public static function resolveDisplayName(array $discordMember): string
+    {
+        return $discordMember['nickname'] ?? $discordMember['display_name'] ?? $discordMember['username'];
     }
 
     /**

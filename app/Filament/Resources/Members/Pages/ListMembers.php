@@ -82,7 +82,7 @@ class ListMembers extends ListRecords
                         $updated = 0;
 
                         foreach ($discordMembers as $dm) {
-                            $displayName = $dm['nickname'] ?? $dm['username'];
+                            $displayName = DiscordService::resolveDisplayName($dm);
 
                             // Find the highest-priority org role that matches any of the member's Discord roles
                             $orgRoleId = null;
