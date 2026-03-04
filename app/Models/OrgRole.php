@@ -10,7 +10,7 @@ class OrgRole extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'label', 'sort_order'];
+    protected $fillable = ['name', 'label', 'discord_role_id', 'sort_order'];
 
     public function members(): HasMany
     {

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Members\Pages;
 
 use App\Filament\Resources\Members\MemberResource;
 use App\Models\Member;
+use App\Models\OrgRole;
 use App\Services\DiscordService;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
@@ -35,17 +36,42 @@ class ListMembers extends ListRecords
                             ->get()
                             ->keyBy('discord_id');
 
+                        // Build a map of discord_role_id => [id, sort_order] for priority-aware lookup.
+                        // When a member holds multiple Discord roles that each map to an org role,
+                        // the org role with the lowest sort_order (highest priority) is assigned.
+                        $roleMap = OrgRole::whereNotNull('discord_role_id')
+                            ->orderBy('sort_order')
+                            ->get(['id', 'discord_role_id', 'sort_order'])
+                            ->keyBy('discord_role_id');
+
                         $created = 0;
                         $updated = 0;
 
                         foreach ($discordMembers as $dm) {
                             $displayName = $dm['nickname'] ?? $dm['username'];
 
+                            // Find the highest-priority org role that matches any of the member's Discord roles
+                            $orgRoleId = null;
+                            $bestSortOrder = PHP_INT_MAX;
+                            foreach ($dm['role_ids'] as $discordRoleId) {
+                                if ($roleMap->has($discordRoleId)) {
+                                    $candidate = $roleMap->get($discordRoleId);
+                                    if ($candidate->sort_order < $bestSortOrder) {
+                                        $orgRoleId = $candidate->id;
+                                        $bestSortOrder = $candidate->sort_order;
+                                    }
+                                }
+                            }
+
                             if ($existing->has($dm['discord_id'])) {
-                                $existing->get($dm['discord_id'])->update([
+                                $updateData = [
                                     'name'       => $displayName,
                                     'avatar_url' => $dm['avatar_url'],
-                                ]);
+                                ];
+                                if ($orgRoleId !== null) {
+                                    $updateData['org_role_id'] = $orgRoleId;
+                                }
+                                $existing->get($dm['discord_id'])->update($updateData);
                                 $updated++;
                             } else {
                                 Member::create([
@@ -54,6 +80,7 @@ class ListMembers extends ListRecords
                                     'handle'      => $dm['username'],
                                     'avatar_url'  => $dm['avatar_url'],
                                     'profile_url' => DiscordService::profileUrl($dm['discord_id']),
+                                    'org_role_id' => $orgRoleId,
                                 ]);
                                 $created++;
                             }

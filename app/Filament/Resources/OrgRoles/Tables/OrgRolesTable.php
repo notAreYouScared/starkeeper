@@ -24,6 +24,11 @@ class OrgRolesTable
                     ->label('Display Label')
                     ->searchable(),
 
+                TextColumn::make('discord_role_id')
+                    ->label('Discord Role ID')
+                    ->placeholder('—')
+                    ->searchable(),
+
                 TextColumn::make('members_count')
                     ->label('Members')
                     ->counts('members')

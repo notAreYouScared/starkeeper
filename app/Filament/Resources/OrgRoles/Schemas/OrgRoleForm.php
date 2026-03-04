@@ -22,6 +22,12 @@ class OrgRoleForm
                     ->required()
                     ->maxLength(255),
 
+                TextInput::make('discord_role_id')
+                    ->label('Discord Role ID')
+                    ->nullable()
+                    ->maxLength(30)
+                    ->helperText('The Discord snowflake ID for this role. When set, members with this Discord role are automatically assigned this org role during sync.'),
+
                 TextInput::make('sort_order')
                     ->label('Sort Order')
                     ->numeric()
