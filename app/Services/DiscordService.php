@@ -75,6 +75,12 @@ class DiscordService
                     continue;
                 }
 
+                // Skip users who do not hold the minimum required member role
+                $minimumRoleId = config('services.discord.minimum_member_role_id', '');
+                if ($minimumRoleId !== '' && ! in_array($minimumRoleId, $member['roles'] ?? [], true)) {
+                    continue;
+                }
+
                 $members[] = [
                     'discord_id' => $userId,
                     'username'   => $user['username'] ?? '',

@@ -24,11 +24,14 @@ return [
     ],
 
     'discord' => [
-        'client_id'     => env('DISCORD_CLIENT_ID'),
-        'client_secret' => env('DISCORD_CLIENT_SECRET'),
-        'redirect'      => env('DISCORD_REDIRECT_URI', '/auth/discord/callback'),
-        'bot_token'     => env('DISCORD_BOT_TOKEN'),
-        'guild_id'      => env('DISCORD_GUILD_ID'),
+        'client_id'               => env('DISCORD_CLIENT_ID'),
+        'client_secret'           => env('DISCORD_CLIENT_SECRET'),
+        'redirect'                => env('DISCORD_REDIRECT_URI', '/auth/discord/callback'),
+        'bot_token'               => env('DISCORD_BOT_TOKEN'),
+        'guild_id'                => env('DISCORD_GUILD_ID'),
+        // Minimum Discord role ID a user must hold to be eligible for roster sync.
+        // Update this value to the Discord snowflake ID of your org's "Member" role.
+        'minimum_member_role_id'  => '',
     ],
 
 ];

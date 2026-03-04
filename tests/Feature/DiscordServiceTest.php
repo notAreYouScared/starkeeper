@@ -185,7 +185,56 @@ class DiscordServiceTest extends TestCase
         $this->assertEquals('wss://gateway.discord.gg', $url);
     }
 
-    public function test_get_guild_members_uses_gif_extension_for_animated_avatars(): void
+    public function test_get_guild_members_skips_users_without_minimum_member_role(): void
+    {
+        config(['services.discord.minimum_member_role_id' => 'member-role-id']);
+
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members*' => Http::response([
+                // has the required role — should be included
+                $this->makeGuildMemberPayload([
+                    'user'  => ['id' => '111111111', 'username' => 'fullmember', 'avatar' => null],
+                    'roles' => ['member-role-id', 'extra-role'],
+                ]),
+                // missing the required role — should be skipped
+                $this->makeGuildMemberPayload([
+                    'user'  => ['id' => '222222222', 'username' => 'visitor', 'avatar' => null],
+                    'roles' => ['some-other-role'],
+                ]),
+            ], 200),
+        ]);
+
+        $service = new DiscordService();
+        $members = $service->getGuildMembers();
+
+        $this->assertCount(1, $members);
+        $this->assertEquals('111111111', $members[0]['discord_id']);
+    }
+
+    public function test_get_guild_members_includes_all_users_when_minimum_role_not_configured(): void
+    {
+        // Default empty string — filter should be inactive
+        config(['services.discord.minimum_member_role_id' => '']);
+
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members*' => Http::response([
+                $this->makeGuildMemberPayload([
+                    'user'  => ['id' => '111111111', 'username' => 'pilot1', 'avatar' => null],
+                    'roles' => [],
+                ]),
+                $this->makeGuildMemberPayload([
+                    'user'  => ['id' => '222222222', 'username' => 'pilot2', 'avatar' => null],
+                    'roles' => ['some-role'],
+                ]),
+            ], 200),
+        ]);
+
+        $service = new DiscordService();
+        $members = $service->getGuildMembers();
+
+        $this->assertCount(2, $members);
+    }
+
     {
         $member = $this->makeGuildMemberPayload([
             'avatar' => null,
