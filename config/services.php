@@ -31,7 +31,7 @@ return [
         'guild_id'                => env('DISCORD_GUILD_ID'),
         // Minimum Discord role ID a user must hold to be eligible for roster sync.
         // Update this value to the Discord snowflake ID of your org's "Member" role.
-        'minimum_member_role_id'  => '',
+        'minimum_member_role_id'  => '1303561707196649512',
     ],
 
 ];
