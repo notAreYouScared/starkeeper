@@ -649,4 +649,27 @@ class TrainingTrackerTest extends TestCase
         $response->assertSee('https://discord.com/users/987654321', false);
         $response->assertSee('Discord Profile');
     }
+
+    public function test_admin_user_sees_edit_member_button(): void
+    {
+        $admin  = User::factory()->create(['is_admin' => true]);
+        $member = $this->createMember();
+
+        $response = $this->actingAs($admin)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('Edit Member');
+        $response->assertSee("/admin/members/{$member->id}/edit", false);
+    }
+
+    public function test_non_admin_user_does_not_see_edit_member_button(): void
+    {
+        $user   = User::factory()->create(['is_admin' => false]);
+        $member = $this->createMember();
+
+        $response = $this->actingAs($user)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Edit Member');
+    }
 }
