@@ -90,18 +90,14 @@
                                                 $hex = ($role && $role['color']) ? '#' . str_pad(dechex($role['color']), 6, '0', STR_PAD_LEFT) : null;
                                             @endphp
                                             @if ($role)
-                                            <span class="inline-flex flex-col rounded-md px-2 py-1 text-xs leading-tight"
+                                            <span
+                                                class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
                                                 @if ($hex)
-                                                    style="background-color: {{ $hex }}1a; border: 1px solid {{ $hex }}4d;"
+                                                    style="background-color: {{ $hex }}1a; color: {{ $hex }};"
                                                 @else
-                                                    style="background-color: rgb(243 244 246); border: 1px solid rgb(229 231 235);"
+                                                    style="background-color: rgb(243 244 246); color: rgb(107 114 128);"
                                                 @endif
-                                            >
-                                                <span class="font-medium"
-                                                    @if ($hex) style="color: {{ $hex }};" @else class="text-gray-600 dark:text-gray-400" @endif
-                                                >{{ $role['name'] }}</span>
-                                                <code class="mt-0.5 font-mono text-[10px] text-gray-400 dark:text-gray-500">{{ $roleId }}</code>
-                                            </span>
+                                            >{{ $role['name'] }}</span>
                                             @endif
                                         @endforeach
                                     </div>
