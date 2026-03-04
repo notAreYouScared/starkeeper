@@ -24,6 +24,7 @@
 
         @foreach($membersByRole as $group)
             @php $accent = $roleAccents[$group['role']->name] ?? $defaultAccent @endphp
+            @if(strtolower($group['role']->name) !== 'member' || auth()->check())
             <section>
                 <div class="flex items-center gap-3 mb-4">
                     <div class="h-8 w-1 rounded {{ $accent['bar'] }}"></div>
@@ -65,6 +66,7 @@
                     @endforeach
                 </div>
             </section>
+            @endif
         @endforeach
 
         {{-- ─────────────────────── UNITS ─────────────────────── --}}
@@ -115,9 +117,11 @@
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center justify-between">
                                                 <h4 class="font-semibold text-white">{{ $team->name }}</h4>
+                                                @auth
                                                 <span class="text-xs text-gray-500 ml-2 shrink-0">
                                                     {{ $team->teamMembers->count() }} {{ str()->plural('member', $team->teamMembers->count()) }}
                                                 </span>
+                                                @endauth
                                             </div>
                                             @if($team->description)
                                                 <p class="text-xs text-gray-400 mt-1">{{ $team->description }}</p>
@@ -125,79 +129,81 @@
                                         </div>
                                     </div>
 
-                                    @if($team->teamMembers->isEmpty())
-                                        <p class="text-xs text-gray-400 italic">No members assigned.</p>
-                                    @else
-                                        @php
-                                            $byRole = $team->teamMembers->groupBy(fn ($tm) => $tm->teamRole?->id ?? 0);
-                                            $sortedRoles = $team->teamMembers
-                                                ->sortBy(fn ($tm) => $tm->teamRole?->sort_order ?? 9999)
-                                                ->map(fn ($tm) => [
-                                                    'key'   => $tm->teamRole?->id ?? 0,
-                                                    'label' => $tm->teamRole?->label ?? 'Unassigned',
-                                                    'color' => $tm->teamRole?->color,
-                                                ])
-                                                ->unique('key')
-                                                ->values();
-                                            // Hex alpha suffixes: 66 = 40%, 33 = 20%, 26 = 15%, 0d = 5%
-                                        @endphp
-
-                                        @foreach($sortedRoles as $roleEntry)
+                                    @auth
+                                        @if($team->teamMembers->isEmpty())
+                                            <p class="text-xs text-gray-400 italic">No members assigned.</p>
+                                        @else
                                             @php
-                                                $roleMembers = $byRole[$roleEntry['key']] ?? collect();
-                                                $roleColor   = $roleEntry['color'];
+                                                $byRole = $team->teamMembers->groupBy(fn ($tm) => $tm->teamRole?->id ?? 0);
+                                                $sortedRoles = $team->teamMembers
+                                                    ->sortBy(fn ($tm) => $tm->teamRole?->sort_order ?? 9999)
+                                                    ->map(fn ($tm) => [
+                                                        'key'   => $tm->teamRole?->id ?? 0,
+                                                        'label' => $tm->teamRole?->label ?? 'Unassigned',
+                                                        'color' => $tm->teamRole?->color,
+                                                    ])
+                                                    ->unique('key')
+                                                    ->values();
+                                                // Hex alpha suffixes: 66 = 40%, 33 = 20%, 26 = 15%, 0d = 5%
                                             @endphp
-                                            @if($roleMembers->isNotEmpty())
-                                                <div class="mb-2">
-                                                    <p class="text-xs font-semibold uppercase tracking-wider mb-1"
-                                                       @if($roleColor) style="color: {{ $roleColor }}" @else class="text-gray-500" @endif>
-                                                        {{ $roleEntry['label'] }}
-                                                    </p>
-                                                    <div class="flex flex-wrap gap-2">
-                                                        @foreach($roleMembers as $tm)
-                                                            <div class="flex items-center gap-2 rounded-lg border px-3 py-1.5"
-                                                                 @if($roleColor)
-                                                                     style="border-color: {{ $roleColor }}66; background-color: {{ $roleColor }}0d"
-                                                                 @else
-                                                                     style="border-color: rgba(255,255,255,0.1); background-color: rgba(255,255,255,0.03)"
-                                                                 @endif>
-                                                                @if($tm->member->avatar_url)
-                                                                    <img src="{{ $tm->member->avatar_url }}"
-                                                                         alt="{{ $tm->member->name }}"
-                                                                         class="h-6 w-6 shrink-0 rounded-full object-cover">
-                                                                @else
-                                                                    <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold"
-                                                                         @if($roleColor)
-                                                                             style="background-color: {{ $roleColor }}33; color: {{ $roleColor }}"
-                                                                         @else
-                                                                             style="background-color: rgba(75,85,99,0.5); color: rgb(209,213,219)"
-                                                                         @endif>
-                                                                        {{ strtoupper(substr($tm->member->name, 0, 2)) }}
-                                                                    </div>
-                                                                @endif
-                                                                <div>
-                                                                    @auth
-                                                                        <a href="{{ route('member.profile', $tm->member) }}"
-                                                                           class="text-sm font-medium text-white hover:text-blue-400 transition-colors">{{ $tm->member->name }}</a>
+
+                                            @foreach($sortedRoles as $roleEntry)
+                                                @php
+                                                    $roleMembers = $byRole[$roleEntry['key']] ?? collect();
+                                                    $roleColor   = $roleEntry['color'];
+                                                @endphp
+                                                @if($roleMembers->isNotEmpty())
+                                                    <div class="mb-2">
+                                                        <p class="text-xs font-semibold uppercase tracking-wider mb-1"
+                                                           @if($roleColor) style="color: {{ $roleColor }}" @else class="text-gray-500" @endif>
+                                                            {{ $roleEntry['label'] }}
+                                                        </p>
+                                                        <div class="flex flex-wrap gap-2">
+                                                            @foreach($roleMembers as $tm)
+                                                                <div class="flex items-center gap-2 rounded-lg border px-3 py-1.5"
+                                                                     @if($roleColor)
+                                                                         style="border-color: {{ $roleColor }}66; background-color: {{ $roleColor }}0d"
+                                                                     @else
+                                                                         style="border-color: rgba(255,255,255,0.1); background-color: rgba(255,255,255,0.03)"
+                                                                     @endif>
+                                                                    @if($tm->member->avatar_url)
+                                                                        <img src="{{ $tm->member->avatar_url }}"
+                                                                             alt="{{ $tm->member->name }}"
+                                                                             class="h-6 w-6 shrink-0 rounded-full object-cover">
                                                                     @else
-                                                                        <span class="text-sm font-medium text-white">{{ $tm->member->name }}</span>
-                                                                    @endauth
-                                                                    @if($tm->title)
-                                                                        <span class="ml-1 text-xs font-medium px-1.5 py-0.5 rounded"
-                                                                              @if($roleColor)
-                                                                                  style="background-color: {{ $roleColor }}26; color: {{ $roleColor }}"
-                                                                              @else
-                                                                                  style="background-color: rgba(75,85,99,0.3); color: rgb(209,213,219)"
-                                                                              @endif>{{ $tm->title }}</span>
+                                                                        <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                                                                             @if($roleColor)
+                                                                                 style="background-color: {{ $roleColor }}33; color: {{ $roleColor }}"
+                                                                             @else
+                                                                                 style="background-color: rgba(75,85,99,0.5); color: rgb(209,213,219)"
+                                                                             @endif>
+                                                                            {{ strtoupper(substr($tm->member->name, 0, 2)) }}
+                                                                        </div>
                                                                     @endif
+                                                                    <div>
+                                                                        @auth
+                                                                            <a href="{{ route('member.profile', $tm->member) }}"
+                                                                               class="text-sm font-medium text-white hover:text-blue-400 transition-colors">{{ $tm->member->name }}</a>
+                                                                        @else
+                                                                            <span class="text-sm font-medium text-white">{{ $tm->member->name }}</span>
+                                                                        @endauth
+                                                                        @if($tm->title)
+                                                                            <span class="ml-1 text-xs font-medium px-1.5 py-0.5 rounded"
+                                                                                  @if($roleColor)
+                                                                                      style="background-color: {{ $roleColor }}26; color: {{ $roleColor }}"
+                                                                                  @else
+                                                                                      style="background-color: rgba(75,85,99,0.3); color: rgb(209,213,219)"
+                                                                                  @endif>{{ $tm->title }}</span>
+                                                                        @endif
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        @endforeach
+                                                            @endforeach
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            @endif
-                                        @endforeach
-                                    @endif
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                    @endauth
                                 </div>
                             @endforeach
                         </div>
