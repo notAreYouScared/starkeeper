@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Charter – StarKeeper</title>
+    <title>Charter – Starkeeper</title>
     @vite(['resources/css/app.css'])
 </head>
 <body class="min-h-full bg-gray-950 text-gray-100 antialiased">
@@ -26,7 +26,7 @@
         <div class="mx-auto max-w-5xl px-4 py-6 flex flex-wrap items-center justify-between gap-4 text-xs text-gray-500">
             <span>&copy; {{ date('Y') }} Starkeeper. All rights reserved.</span>
             <div class="flex items-center gap-4">
-                <a href="https://robertsspaceindustries.com/en/orgs/STARKEEPER"
+                <a href="https://robertsspaceindustries.com/en/orgs/starkeeper"
                    target="_blank" rel="noopener noreferrer"
                    class="hover:text-gray-300 transition-colors">RSI Org Page</a>
                 <a href="https://discord.gg/starkeeper"

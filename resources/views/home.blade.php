@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StarKeeper – Star Citizen Organisation</title>
+    <title>Starkeeper – Star Citizen Organisation</title>
     @vite(['resources/css/app.css'])
 </head>
 <body class="min-h-full bg-gray-950 text-gray-100 antialiased">
@@ -13,7 +13,7 @@
     {{-- ─── Hero Banner ─── --}}
     <div class="relative w-full overflow-hidden" style="max-height: 340px;">
         <img src="{{ url('image/banner.png') }}"
-             alt="StarKeeper Banner"
+             alt="Starkeeper Banner"
              class="w-full object-cover object-center"
              style="max-height: 340px;">
         <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/5 to-transparent"></div>
@@ -42,7 +42,7 @@
                 </a>
 
                 {{-- RSI Org page --}}
-                <a href="https://robertsspaceindustries.com/en/orgs/STARKEEPER"
+                <a href="https://robertsspaceindustries.com/en/orgs/starkeeper"
                    target="_blank" rel="noopener noreferrer"
                    class="inline-flex items-center gap-2 rounded-lg border border-white/20 hover:border-blue-400/60 bg-white/5 hover:bg-blue-400/10 px-6 py-3 text-sm font-semibold text-gray-200 shadow-lg transition-colors">
                     <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
@@ -110,7 +110,7 @@
         <div class="mx-auto max-w-5xl px-4 py-6 flex flex-wrap items-center justify-between gap-4 text-xs text-gray-500">
             <span>&copy; {{ date('Y') }} Starkeeper. All rights reserved.</span>
             <div class="flex items-center gap-4">
-                <a href="https://robertsspaceindustries.com/en/orgs/STARKEEPER"
+                <a href="https://robertsspaceindustries.com/en/orgs/starkeeper"
                    target="_blank" rel="noopener noreferrer"
                    class="hover:text-gray-300 transition-colors">RSI Org Page</a>
                 <a href="https://discord.gg/starkeeper"

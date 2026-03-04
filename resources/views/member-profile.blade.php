@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $member->name }} – StarKeeper</title>
+    <title>{{ $member->name }} – Starkeeper</title>
     @vite(['resources/css/app.css'])
 </head>
 <body class="min-h-full bg-gray-950 text-gray-100 antialiased">
