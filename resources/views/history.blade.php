@@ -24,20 +24,6 @@
         </div>
 
     </main>
-
-    <footer class="border-t border-white/10 mt-12">
-        <div class="mx-auto max-w-5xl px-4 py-6 flex flex-wrap items-center justify-between gap-4 text-xs text-gray-500">
-            <span>&copy; {{ date('Y') }} Starkeeper. All rights reserved.</span>
-            <div class="flex items-center gap-4">
-                <a href="https://robertsspaceindustries.com/en/orgs/starkeeper"
-                   target="_blank" rel="noopener noreferrer"
-                   class="hover:text-gray-300 transition-colors">RSI Org Page</a>
-                <a href="https://discord.gg/starkeeper"
-                   target="_blank" rel="noopener noreferrer"
-                   class="hover:text-gray-300 transition-colors">Discord</a>
-            </div>
-        </div>
-    </footer>
-
+    <x-footer />
 </body>
 </html>

@@ -102,6 +102,35 @@ class HomepageTest extends TestCase
         $response->assertDontSee('My Profile');
     }
 
+    public function test_homepage_contains_disclaimer(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertSee('This is an unofficial fansite');
+        $response->assertSee('Cloud Imperium Rights LLC');
+    }
+
+    public function test_history_page_contains_disclaimer(): void
+    {
+        $response = $this->get('/history');
+
+        $response->assertSee('This is an unofficial fansite');
+    }
+
+    public function test_manifesto_page_contains_disclaimer(): void
+    {
+        $response = $this->get('/manifesto');
+
+        $response->assertSee('This is an unofficial fansite');
+    }
+
+    public function test_charter_page_contains_disclaimer(): void
+    {
+        $response = $this->get('/charter');
+
+        $response->assertSee('This is an unofficial fansite');
+    }
+
     public function test_guest_does_not_see_my_profile_link(): void
     {
         $response = $this->get('/');
