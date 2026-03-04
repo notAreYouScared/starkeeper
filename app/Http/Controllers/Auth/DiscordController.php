@@ -23,12 +23,7 @@ class DiscordController extends Controller
 
         if ($user) {
             $user->update([
-                'avatar'     => $discordUser->getAvatar(),
-            ]);
-
-            $member = Member::where('discord_id', $discordUser->getId())->first();
-            $member?->update([
-                'avatar_url' => $discordUser->getAvatar(),
+                'avatar' => $discordUser->getAvatar(),
             ]);
         } else {
             $user = User::create([
@@ -37,7 +32,16 @@ class DiscordController extends Controller
                 'email'      => $discordUser->getEmail(),
                 'avatar'     => $discordUser->getAvatar(),
             ]);
+        }
 
+        $member = Member::where('discord_id', $discordUser->getId())->first();
+
+        if ($member) {
+            $member->update([
+                'name'       => $discordUser->getName() ?? $discordUser->getNickname(),
+                'avatar_url' => $discordUser->getAvatar(),
+            ]);
+        } else {
             Member::create([
                 'discord_id'  => $discordUser->getId(),
                 'name'        => $discordUser->getName() ?? $discordUser->getNickname(),

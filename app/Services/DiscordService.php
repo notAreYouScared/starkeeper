@@ -8,7 +8,7 @@ class DiscordService
 {
     private const API_BASE = 'https://discord.com/api/v10';
 
-    private const PROFILE_URL_PREFIX = 'discord://-/users/';
+    private const PROFILE_URL_BASE = 'discord://-/users/';
 
     private string $botToken;
 
@@ -25,7 +25,7 @@ class DiscordService
      */
     public static function profileUrl(string $userId): string
     {
-        return self::PROFILE_URL_PREFIX . $userId;
+        return self::PROFILE_URL_BASE . $userId;
     }
 
     /**

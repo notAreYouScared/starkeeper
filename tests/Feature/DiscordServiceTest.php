@@ -153,7 +153,7 @@ class DiscordServiceTest extends TestCase
         $this->assertArrayHasKey('role-2', $roles);
     }
 
-    public function test_get_guild_members_animated_avatar_uses_gif_extension(): void
+    public function test_get_guild_members_uses_gif_extension_for_animated_avatars(): void
     {
         $member = $this->makeGuildMemberPayload([
             'avatar' => null,
