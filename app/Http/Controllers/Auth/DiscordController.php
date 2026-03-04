@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Member;
 use App\Models\User;
+use App\Services\DiscordService;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -42,7 +43,7 @@ class DiscordController extends Controller
                 'name'        => $discordUser->getName() ?? $discordUser->getNickname(),
                 'handle'      => $discordUser->getNickname(),
                 'avatar_url'  => $discordUser->getAvatar(),
-                'profile_url' => 'discord://-/users/' . $discordUser->getId(),
+                'profile_url' => DiscordService::profileUrl($discordUser->getId()),
             ]);
         }
 

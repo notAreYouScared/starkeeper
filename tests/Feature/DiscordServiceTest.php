@@ -1,0 +1,172 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Services\DiscordService;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
+use Tests\TestCase;
+
+class DiscordServiceTest extends TestCase
+{
+    private function makeGuildMemberPayload(array $overrides = []): array
+    {
+        return array_merge([
+            'user' => [
+                'id'       => '111222333',
+                'username' => 'starpilot',
+                'avatar'   => 'abc123',
+            ],
+            'nick'   => 'Star Pilot',
+            'avatar' => null,
+            'roles'  => ['role-1', 'role-2'],
+        ], $overrides);
+    }
+
+    public function test_get_guild_members_returns_mapped_data(): void
+    {
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members*' => Http::response([
+                $this->makeGuildMemberPayload(),
+            ], 200),
+        ]);
+
+        $service = new DiscordService();
+        $members = $service->getGuildMembers();
+
+        $this->assertCount(1, $members);
+        $this->assertEquals('111222333', $members[0]['discord_id']);
+        $this->assertEquals('starpilot', $members[0]['username']);
+        $this->assertEquals('Star Pilot', $members[0]['nickname']);
+        $this->assertStringContainsString('abc123', $members[0]['avatar_url']);
+        $this->assertEquals(['role-1', 'role-2'], $members[0]['role_ids']);
+    }
+
+    public function test_get_guild_members_uses_guild_avatar_when_present(): void
+    {
+        $member = $this->makeGuildMemberPayload(['avatar' => 'guild_avatar_hash']);
+
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members*' => Http::response([$member], 200),
+        ]);
+
+        config(['services.discord.guild_id' => 'test-guild']);
+
+        $service = new DiscordService();
+        $members = $service->getGuildMembers();
+
+        $this->assertStringContainsString('guilds/test-guild/users', $members[0]['avatar_url']);
+        $this->assertStringContainsString('guild_avatar_hash', $members[0]['avatar_url']);
+    }
+
+    public function test_get_guild_members_falls_back_to_user_avatar(): void
+    {
+        $member = $this->makeGuildMemberPayload(['avatar' => null]);
+
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members*' => Http::response([$member], 200),
+        ]);
+
+        $service = new DiscordService();
+        $members = $service->getGuildMembers();
+
+        $this->assertStringContainsString('avatars/111222333/abc123', $members[0]['avatar_url']);
+    }
+
+    public function test_get_guild_members_returns_null_avatar_when_no_avatar(): void
+    {
+        $member = $this->makeGuildMemberPayload([
+            'avatar' => null,
+            'user'   => ['id' => '111222333', 'username' => 'starpilot', 'avatar' => null],
+        ]);
+
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members*' => Http::response([$member], 200),
+        ]);
+
+        $service = new DiscordService();
+        $members = $service->getGuildMembers();
+
+        $this->assertNull($members[0]['avatar_url']);
+    }
+
+    public function test_get_guild_members_uses_username_when_no_nickname(): void
+    {
+        $member = $this->makeGuildMemberPayload(['nick' => null]);
+
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members*' => Http::response([$member], 200),
+        ]);
+
+        $service = new DiscordService();
+        $members = $service->getGuildMembers();
+
+        $this->assertNull($members[0]['nickname']);
+        $this->assertEquals('starpilot', $members[0]['username']);
+    }
+
+    public function test_get_guild_members_skips_entries_without_user_id(): void
+    {
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members*' => Http::response([
+                ['user' => [], 'nick' => null, 'avatar' => null, 'roles' => []],
+            ], 200),
+        ]);
+
+        $service = new DiscordService();
+        $members = $service->getGuildMembers();
+
+        $this->assertEmpty($members);
+    }
+
+    public function test_get_guild_members_sends_bot_authorization_header(): void
+    {
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members*' => Http::response([], 200),
+        ]);
+
+        config(['services.discord.bot_token' => 'my-bot-token']);
+
+        $service = new DiscordService();
+        $service->getGuildMembers();
+
+        Http::assertSent(function (Request $request) {
+            return $request->hasHeader('Authorization', 'Bot my-bot-token');
+        });
+    }
+
+    public function test_get_guild_roles_returns_keyed_array(): void
+    {
+        Http::fake([
+            'discord.com/api/v10/guilds/*/roles' => Http::response([
+                ['id' => 'role-1', 'name' => 'Admin', 'color' => 15158332],
+                ['id' => 'role-2', 'name' => 'Member', 'color' => 0],
+            ], 200),
+        ]);
+
+        $service = new DiscordService();
+        $roles = $service->getGuildRoles();
+
+        $this->assertArrayHasKey('role-1', $roles);
+        $this->assertEquals('Admin', $roles['role-1']['name']);
+        $this->assertEquals(15158332, $roles['role-1']['color']);
+        $this->assertArrayHasKey('role-2', $roles);
+    }
+
+    public function test_get_guild_members_animated_avatar_uses_gif_extension(): void
+    {
+        $member = $this->makeGuildMemberPayload([
+            'avatar' => null,
+            'user'   => ['id' => '111222333', 'username' => 'starpilot', 'avatar' => 'a_animatedhash'],
+        ]);
+
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members*' => Http::response([$member], 200),
+        ]);
+
+        $service = new DiscordService();
+        $members = $service->getGuildMembers();
+
+        $this->assertStringEndsWith('.gif', $members[0]['avatar_url']);
+    }
+}
