@@ -105,6 +105,26 @@ class DiscordServiceTest extends TestCase
         $this->assertEquals('starpilot', $members[0]['username']);
     }
 
+    public function test_get_guild_members_skips_bot_users(): void
+    {
+        Http::fake([
+            'discord.com/api/v10/guilds/*/members*' => Http::response([
+                $this->makeGuildMemberPayload([
+                    'user' => ['id' => '111222333', 'username' => 'starpilot', 'avatar' => null, 'bot' => true],
+                ]),
+                $this->makeGuildMemberPayload([
+                    'user' => ['id' => '444555666', 'username' => 'humanpilot', 'avatar' => null],
+                ]),
+            ], 200),
+        ]);
+
+        $service = new DiscordService();
+        $members = $service->getGuildMembers();
+
+        $this->assertCount(1, $members);
+        $this->assertEquals('444555666', $members[0]['discord_id']);
+    }
+
     public function test_get_guild_members_skips_entries_without_user_id(): void
     {
         Http::fake([
@@ -151,6 +171,18 @@ class DiscordServiceTest extends TestCase
         $this->assertEquals('Admin', $roles['role-1']['name']);
         $this->assertEquals(15158332, $roles['role-1']['color']);
         $this->assertArrayHasKey('role-2', $roles);
+    }
+
+    public function test_get_gateway_url_returns_url_from_api(): void
+    {
+        Http::fake([
+            'discord.com/api/v10/gateway/bot' => Http::response(['url' => 'wss://gateway.discord.gg'], 200),
+        ]);
+
+        $service = new DiscordService();
+        $url = $service->getGatewayUrl();
+
+        $this->assertEquals('wss://gateway.discord.gg', $url);
     }
 
     public function test_get_guild_members_uses_gif_extension_for_animated_avatars(): void

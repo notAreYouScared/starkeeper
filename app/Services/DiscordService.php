@@ -70,6 +70,11 @@ class DiscordService
                     continue;
                 }
 
+                // Skip bots — they should not appear in the member roster
+                if ($user['bot'] ?? false) {
+                    continue;
+                }
+
                 $members[] = [
                     'discord_id' => $userId,
                     'username'   => $user['username'] ?? '',
@@ -83,6 +88,19 @@ class DiscordService
         } while (count($batch) === 1000);
 
         return $members;
+    }
+
+    /**
+     * Fetch the Discord Gateway WebSocket URL for bots.
+     */
+    public function getGatewayUrl(): string
+    {
+        $response = Http::withToken($this->botToken, 'Bot')
+            ->get(self::API_BASE . '/gateway/bot');
+
+        $response->throw();
+
+        return $response->json('url');
     }
 
     /**
