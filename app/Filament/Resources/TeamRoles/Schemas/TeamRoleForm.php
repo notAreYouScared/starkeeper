@@ -41,6 +41,12 @@ class TeamRoleForm
                 ColorPicker::make('color')
                     ->label('Outline Colour')
                     ->nullable(),
+
+                TextInput::make('discord_role_id')
+                    ->label('Discord Role ID')
+                    ->placeholder('Discord snowflake ID')
+                    ->nullable()
+                    ->maxLength(255),
             ]);
     }
 }

@@ -32,7 +32,7 @@
 
             <div class="flex flex-wrap items-center justify-center gap-4">
                 {{-- Discord button --}}
-                <a href="https://discord.gg/starkeeper"
+                <a href="https://discord.gg/aEPQ6Zfvhd"
                    target="_blank" rel="noopener noreferrer"
                    class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-colors">
                     <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">

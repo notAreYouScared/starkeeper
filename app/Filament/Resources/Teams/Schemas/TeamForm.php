@@ -44,6 +44,12 @@ class TeamForm
                     ->numeric()
                     ->default(0)
                     ->helperText('Lower numbers appear first.'),
+
+                TextInput::make('discord_role_id')
+                    ->label('Discord Role ID')
+                    ->placeholder('Discord snowflake ID')
+                    ->nullable()
+                    ->maxLength(255),
             ]);
     }
 }

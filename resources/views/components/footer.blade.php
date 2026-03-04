@@ -6,7 +6,7 @@
                 <a href="https://robertsspaceindustries.com/en/orgs/STARKEEPER"
                    target="_blank" rel="noopener noreferrer"
                    class="hover:text-gray-300 transition-colors">RSI Org Page</a>
-                <a href="https://discord.gg/starkeeper"
+                <a href="https://discord.gg/aEPQ6Zfvhd"
                    target="_blank" rel="noopener noreferrer"
                    class="hover:text-gray-300 transition-colors">Discord</a>
             </div>

@@ -12,7 +12,7 @@ class Team extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['unit_id', 'name', 'description', 'image', 'sort_order'];
+    protected $fillable = ['unit_id', 'name', 'description', 'image', 'sort_order', 'discord_role_id'];
 
     public function unit(): BelongsTo
     {

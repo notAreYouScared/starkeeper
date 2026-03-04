@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Member;
 use App\Models\User;
+use App\Services\DiscordService;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -22,12 +23,7 @@ class DiscordController extends Controller
 
         if ($user) {
             $user->update([
-                'avatar'     => $discordUser->getAvatar(),
-            ]);
-
-            $member = Member::where('discord_id', $discordUser->getId())->first();
-            $member?->update([
-                'avatar_url' => $discordUser->getAvatar(),
+                'avatar' => $discordUser->getAvatar(),
             ]);
         } else {
             $user = User::create([
@@ -36,13 +32,22 @@ class DiscordController extends Controller
                 'email'      => $discordUser->getEmail(),
                 'avatar'     => $discordUser->getAvatar(),
             ]);
+        }
 
+        $member = Member::where('discord_id', $discordUser->getId())->first();
+
+        if ($member) {
+            $member->update([
+                'name'       => $discordUser->getName() ?? $discordUser->getNickname(),
+                'avatar_url' => $discordUser->getAvatar(),
+            ]);
+        } else {
             Member::create([
                 'discord_id'  => $discordUser->getId(),
                 'name'        => $discordUser->getName() ?? $discordUser->getNickname(),
                 'handle'      => $discordUser->getNickname(),
                 'avatar_url'  => $discordUser->getAvatar(),
-                'profile_url' => 'discord://-/users/' . $discordUser->getId(),
+                'profile_url' => DiscordService::profileUrl($discordUser->getId()),
             ]);
         }
 

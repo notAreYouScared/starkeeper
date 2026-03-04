@@ -10,7 +10,11 @@ class OrgRole extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'label', 'sort_order'];
+    protected $fillable = ['name', 'label', 'discord_role_ids', 'sort_order'];
+
+    protected $casts = [
+        'discord_role_ids' => 'array',
+    ];
 
     public function members(): HasMany
     {

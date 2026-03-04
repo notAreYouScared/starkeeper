@@ -24,6 +24,20 @@ class OrgRolesTable
                     ->label('Display Label')
                     ->searchable(),
 
+                TextColumn::make('discord_role_ids')
+                    ->label('Discord Role IDs')
+                    ->placeholder('—')
+                    ->formatStateUsing(function (mixed $state): string {
+                        if (is_string($state)) {
+                            $state = json_decode($state, true) ?? [];
+                        }
+
+                        return ! empty($state) ? implode(', ', (array) $state) : '';
+                    })
+                    ->searchable(query: function ($query, string $search) {
+                        $query->whereJsonContains('discord_role_ids', $search);
+                    }),
+
                 TextColumn::make('members_count')
                     ->label('Members')
                     ->counts('members')

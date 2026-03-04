@@ -53,6 +53,11 @@ class TeamsTable
                     ->label('Display Order')
                     ->width(5)
                     ->sortable(),
+
+                TextColumn::make('discord_role_id')
+                    ->label('Discord Role ID')
+                    ->placeholder('—')
+                    ->searchable(),
             ])
             ->defaultSort('sort_order')
             ->filters([
