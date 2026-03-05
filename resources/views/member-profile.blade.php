@@ -24,29 +24,6 @@
 
         {{-- ─── Member Card ─── --}}
         <section class="rounded-2xl border {{ $accent['border'] }} {{ $accent['bg'] }} p-6">
-            @if($isAdmin)
-                <div class="flex justify-end mb-3 gap-2">
-                    @if($member->discord_id)
-                        <form method="POST" action="{{ route('member.sync-discord', $member) }}">
-                            @csrf
-                            <button type="submit"
-                                    class="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/40 px-3 py-1.5 text-sm font-medium text-indigo-300 hover:text-indigo-200 transition-colors">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-                                </svg>
-                                Update from Discord
-                            </button>
-                        </form>
-                    @endif
-                    <a href="/admin/members/{{ $member->id }}/edit"
-                       class="inline-flex items-center gap-1.5 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                        </svg>
-                        Edit Member
-                    </a>
-                </div>
-            @endif
             <div class="flex items-center gap-5">
                 @if($member->avatar_url)
                     <img src="{{ $member->avatar_url }}"
@@ -57,10 +34,15 @@
                         {{ strtoupper(substr($member->name, 0, 2)) }}
                     </div>
                 @endif
-                <div>
+                <div class="flex-1 min-w-0">
                     @if($canEditName)
                         @if(session('status'))
                             <p class="text-xs text-green-400 mb-1">{{ session('status') }}</p>
+                        @endif
+                        @if($isAdmin && $member->discord_id)
+                            <form id="discord-sync-form" method="POST" action="{{ route('member.sync-discord', $member) }}" class="hidden">
+                                @csrf
+                            </form>
                         @endif
                         <form method="POST" action="{{ route('member.profile.update', $member) }}" class="space-y-2">
                             @csrf
@@ -70,6 +52,24 @@
                                        class="bg-transparent text-2xl font-bold text-white border-b border-white/30 focus:border-white/70 focus:outline-none outline-none w-auto"
                                        aria-label="Display name">
                                 <button type="submit" class="text-xs text-gray-400 hover:text-white transition-colors">Save</button>
+                                @if($isAdmin)
+                                    @if($member->discord_id)
+                                        <button type="submit" form="discord-sync-form"
+                                                class="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/40 px-3 py-1.5 text-sm font-medium text-indigo-300 hover:text-indigo-200 transition-colors">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                            </svg>
+                                            Update from Discord
+                                        </button>
+                                    @endif
+                                    <a href="/admin/members/{{ $member->id }}/edit"
+                                       class="inline-flex items-center gap-1.5 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                        </svg>
+                                        Edit Member
+                                    </a>
+                                @endif
                             </div>
                             @error('name')
                                 <p class="text-xs text-red-400 mb-1">{{ $message }}</p>
@@ -86,7 +86,30 @@
                             @enderror
                         </form>
                     @else
-                        <h1 class="text-2xl font-bold text-white">{{ $member->name }}</h1>
+                        <div class="flex items-center gap-3 mb-1">
+                            <h1 class="text-2xl font-bold text-white">{{ $member->name }}</h1>
+                            @if($isAdmin)
+                                @if($member->discord_id)
+                                    <form method="POST" action="{{ route('member.sync-discord', $member) }}">
+                                        @csrf
+                                        <button type="submit"
+                                                class="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/40 px-3 py-1.5 text-sm font-medium text-indigo-300 hover:text-indigo-200 transition-colors">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                            </svg>
+                                            Update from Discord
+                                        </button>
+                                    </form>
+                                @endif
+                                <a href="/admin/members/{{ $member->id }}/edit"
+                                   class="inline-flex items-center gap-1.5 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                    </svg>
+                                    Edit Member
+                                </a>
+                            @endif
+                        </div>
                     @endif
                     <div class="mt-1.5 flex items-center gap-2">
                         @if($member->profile_url)
