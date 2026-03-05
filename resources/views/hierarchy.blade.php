@@ -10,7 +10,29 @@
 
     <x-nav active-page="hierarchy" breadcrumb="Hierarchy" />
 
-    <main class="mx-auto max-w-5xl px-4 py-10 space-y-10">
+    <main class="mx-auto max-w-5xl px-4 py-10">
+
+        {{-- ─────────────────────── TABS ─────────────────────── --}}
+        <div class="flex gap-1 border-b border-white/10 mb-8" role="tablist" aria-label="Hierarchy sections">
+            <button id="tab-org-roles"
+                    role="tab"
+                    aria-selected="true"
+                    aria-controls="panel-org-roles"
+                    class="tab-btn px-5 py-2.5 text-sm font-semibold tracking-wide rounded-t-lg transition-colors
+                           text-blue-400 border-b-2 border-blue-400 bg-blue-400/10">
+                Org Roles
+            </button>
+            <button id="tab-divisions"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="panel-divisions"
+                    class="tab-btn px-5 py-2.5 text-sm font-semibold tracking-wide rounded-t-lg transition-colors
+                           text-gray-400 border-b-2 border-transparent hover:text-gray-200 hover:bg-white/5">
+                Divisions
+            </button>
+        </div>
+
+        <div id="panel-org-roles" role="tabpanel" aria-labelledby="tab-org-roles" class="space-y-10">
 
         {{-- ─────────────────────── ORG ROLES ─────────────────────── --}}
         @php
@@ -69,7 +91,10 @@
             @endif
         @endforeach
 
+        </div>{{-- end #panel-org-roles --}}
+
         {{-- ─────────────────────── UNITS ─────────────────────── --}}
+        <div id="panel-divisions" role="tabpanel" aria-labelledby="tab-divisions" class="hidden space-y-8">
         @php
             $unitStyles = [
                 'Security' => ['border' => 'border-red-500/40',   'bg' => 'bg-red-500/5',   'accent' => 'bg-red-500',   'text' => 'text-red-400',   'badge' => 'bg-red-900/30 text-red-300',   'avatarBg' => 'bg-red-500/20'],
@@ -212,9 +237,38 @@
             @endforeach
         </div>
 
+        </div>{{-- end #panel-divisions --}}
+
     </main>
 
     <x-footer />
+
+    <script>
+    (function () {
+        const tabs = document.querySelectorAll('[role="tab"]');
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                tabs.forEach(function (t) {
+                    t.setAttribute('aria-selected', 'false');
+                    t.classList.remove('text-blue-400', 'border-blue-400', 'bg-blue-400/10');
+                    t.classList.add('text-gray-400', 'border-transparent');
+                });
+                tab.setAttribute('aria-selected', 'true');
+                tab.classList.add('text-blue-400', 'border-blue-400', 'bg-blue-400/10');
+                tab.classList.remove('text-gray-400', 'border-transparent');
+
+                document.querySelectorAll('[role="tabpanel"]').forEach(function (panel) {
+                    panel.classList.add('hidden');
+                });
+                const panelId = tab.getAttribute('aria-controls');
+                const panel = panelId ? document.getElementById(panelId) : null;
+                if (panel) {
+                    panel.classList.remove('hidden');
+                }
+            });
+        });
+    })();
+    </script>
 
 </body>
 </html>
