@@ -122,12 +122,12 @@ class TeamJoinRequestTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function test_join_request_redirects_with_error_when_team_has_no_owner_with_discord(): void
+    public function test_join_request_redirects_with_error_when_team_has_no_owner_set(): void
     {
         $user = User::factory()->create(['discord_id' => '999888777']);
         $unit = $this->createUnit();
         $team = $this->createTeam($unit, ['show_join_request' => true]);
-        // No team members, so no owner
+        // No owner_member_id set
 
         $response = $this->actingAs($user)->post(route('team.join-request', $team));
 
@@ -135,20 +135,27 @@ class TeamJoinRequestTest extends TestCase
         $response->assertSessionHas('join_request_error');
     }
 
-    public function test_join_request_sends_dm_to_team_leader_and_redirects_with_success(): void
+    public function test_join_request_redirects_with_error_when_owner_has_no_discord_id(): void
     {
-        $user         = User::factory()->create(['discord_id' => '999888777']);
-        $unit         = $this->createUnit();
-        $team         = $this->createTeam($unit, ['show_join_request' => true, 'name' => 'Vanguard']);
-        $teamRole     = $this->createTeamRole($unit);
-        $leaderMember = $this->createMember(['discord_id' => '111222333', 'handle' => 'leader']);
+        $user        = User::factory()->create(['discord_id' => '999888777']);
+        $unit        = $this->createUnit();
+        $ownerMember = $this->createMember(['discord_id' => null, 'handle' => 'owner']);
+        $team        = $this->createTeam($unit, ['show_join_request' => true, 'owner_member_id' => $ownerMember->id]);
+        TeamMember::create(['team_id' => $team->id, 'member_id' => $ownerMember->id]);
 
-        TeamMember::create([
-            'team_id'      => $team->id,
-            'member_id'    => $leaderMember->id,
-            'team_role_id' => $teamRole->id,
-            'sort_order'   => 0,
-        ]);
+        $response = $this->actingAs($user)->post(route('team.join-request', $team));
+
+        $response->assertRedirect(route('hierarchy'));
+        $response->assertSessionHas('join_request_error');
+    }
+
+    public function test_join_request_sends_dm_to_explicit_owner_and_redirects_with_success(): void
+    {
+        $user        = User::factory()->create(['discord_id' => '999888777']);
+        $unit        = $this->createUnit();
+        $ownerMember = $this->createMember(['discord_id' => '111222333', 'handle' => 'owner']);
+        $team        = $this->createTeam($unit, ['show_join_request' => true, 'name' => 'Vanguard', 'owner_member_id' => $ownerMember->id]);
+        TeamMember::create(['team_id' => $team->id, 'member_id' => $ownerMember->id]);
 
         $capturedMessage   = null;
         $capturedRecipient = null;
@@ -175,18 +182,21 @@ class TeamJoinRequestTest extends TestCase
         $this->assertStringContainsString('Vanguard', $capturedMessage);
     }
 
-    public function test_join_request_picks_leader_by_lowest_team_role_sort_order(): void
+    public function test_join_request_uses_explicit_owner_not_role_sort_order(): void
     {
         $user          = User::factory()->create(['discord_id' => '111000111']);
         $unit          = $this->createUnit();
-        $team          = $this->createTeam($unit, ['show_join_request' => true]);
         $leaderRole    = $this->createTeamRole($unit, ['name' => 'leader', 'label' => 'Leader', 'sort_order' => 0]);
         $memberRole    = TeamRole::create(['unit_id' => $unit->id, 'name' => 'grunt', 'label' => 'Grunt', 'sort_order' => 10]);
+        // leaderMember has the highest-priority role but is NOT the designated owner
         $leaderMember  = $this->createMember(['discord_id' => 'leader-discord', 'handle' => 'leader']);
-        $regularMember = $this->createMember(['discord_id' => 'regular-discord', 'handle' => 'regular', 'name' => 'Regular']);
+        // designatedOwner has a lower-priority role but IS explicitly set as the owner
+        $designatedOwner = $this->createMember(['discord_id' => 'owner-discord', 'handle' => 'owner', 'name' => 'Owner']);
 
-        TeamMember::create(['team_id' => $team->id, 'member_id' => $regularMember->id, 'team_role_id' => $memberRole->id, 'sort_order' => 0]);
-        TeamMember::create(['team_id' => $team->id, 'member_id' => $leaderMember->id, 'team_role_id' => $leaderRole->id, 'sort_order' => 1]);
+        $team = $this->createTeam($unit, ['show_join_request' => true, 'owner_member_id' => $designatedOwner->id]);
+
+        TeamMember::create(['team_id' => $team->id, 'member_id' => $leaderMember->id, 'team_role_id' => $leaderRole->id, 'sort_order' => 0]);
+        TeamMember::create(['team_id' => $team->id, 'member_id' => $designatedOwner->id, 'team_role_id' => $memberRole->id, 'sort_order' => 1]);
 
         $capturedRecipient = null;
 
@@ -203,6 +213,6 @@ class TeamJoinRequestTest extends TestCase
 
         $this->actingAs($user)->post(route('team.join-request', $team));
 
-        $this->assertSame('leader-discord', $capturedRecipient);
+        $this->assertSame('owner-discord', $capturedRecipient);
     }
 }

@@ -8,6 +8,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Model;
 
 class TeamForm
 {
@@ -56,6 +57,22 @@ class TeamForm
                     ->label('Show "Request to Join" Button')
                     ->helperText('When enabled, a "Request to Join" button will be shown on this team\'s card in the Hierarchy page.')
                     ->default(false),
+
+                Select::make('owner_member_id')
+                    ->label('Team Owner')
+                    ->nullable()
+                    ->searchable()
+                    ->options(function (?Model $record) {
+                        if (! $record) {
+                            return [];
+                        }
+
+                        return $record->members()
+                            ->orderBy('members.name')
+                            ->pluck('members.name', 'members.id')
+                            ->toArray();
+                    })
+                    ->helperText('The member who receives "Request to Join" notifications. Only current team members are listed.'),
             ]);
     }
 }

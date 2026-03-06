@@ -46,22 +46,16 @@ class HierarchyController extends Controller
 
         abort_unless($user->discord_id, 422, 'Your account has no Discord ID linked.');
 
-        // Find the team owner: the member with the lowest-sort-order team role.
-        // PHP_INT_MAX is used so that team members without a role are sorted last.
-        $teamLeader = $team->teamMembers()
-            ->with(['member', 'teamRole'])
-            ->get()
-            ->sortBy(fn ($tm) => [$tm->teamRole?->sort_order ?? PHP_INT_MAX, $tm->sort_order ?? 0])
-            ->first();
+        $owner = $team->owner;
 
-        if (! $teamLeader || ! $teamLeader->member?->discord_id) {
+        if (! $owner || ! $owner->discord_id) {
             return redirect()->route('hierarchy')
-                ->with('join_request_error', 'Unable to send request: no team owner with a linked Discord account was found.');
+                ->with('join_request_error', 'Unable to send request: this team has no owner with a linked Discord account.');
         }
 
         $message = "<@{$user->discord_id}> has interest in joining {$team->name}";
 
-        app(DiscordService::class)->sendDirectMessage($teamLeader->member->discord_id, $message);
+        app(DiscordService::class)->sendDirectMessage($owner->discord_id, $message);
 
         return redirect()->route('hierarchy')
             ->with('join_request_success', "Your request to join {$team->name} has been sent.");

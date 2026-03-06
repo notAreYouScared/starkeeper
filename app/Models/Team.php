@@ -12,7 +12,7 @@ class Team extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['unit_id', 'name', 'description', 'image', 'sort_order', 'discord_role_id', 'show_join_request'];
+    protected $fillable = ['unit_id', 'name', 'description', 'image', 'sort_order', 'discord_role_id', 'show_join_request', 'owner_member_id'];
 
     protected function casts(): array
     {
@@ -24,6 +24,11 @@ class Team extends Model
     public function unit(): BelongsTo
     {
         return $this->belongsTo(Unit::class);
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(Member::class, 'owner_member_id');
     }
 
     public function teamMembers(): HasMany
