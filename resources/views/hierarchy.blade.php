@@ -157,13 +157,13 @@
                                                 @auth
                                                 <div class="flex items-center gap-2 shrink-0 ml-2">
                                                     @if($team->show_join_request)
-                                                        <form method="POST" action="{{ route('team.join-request', $team) }}">
-                                                            @csrf
-                                                            <button type="submit"
-                                                                    class="text-xs font-medium px-2.5 py-1 rounded-lg border border-blue-500/50 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:border-blue-400 transition-colors">
-                                                                Request to Join
-                                                            </button>
-                                                        </form>
+                                                        <button type="button"
+                                                                data-join-team-name="{{ $team->name }}"
+                                                                data-join-action="{{ route('team.join-request', $team) }}"
+                                                                onclick="openJoinModal(this)"
+                                                                class="text-xs font-medium px-2.5 py-1 rounded-lg border border-blue-500/50 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:border-blue-400 transition-colors">
+                                                            Request to Join
+                                                        </button>
                                                     @endif
                                                     <span class="text-xs text-gray-500">
                                                         {{ $team->teamMembers->count() }} {{ str()->plural('member', $team->teamMembers->count()) }}
@@ -266,7 +266,79 @@
 
     <x-footer />
 
+    @auth
+    {{-- ─────────────────────── Request to Join Modal ─────────────────────── --}}
+    <div id="join-modal"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="join-modal-title"
+         class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        {{-- Backdrop --}}
+        <div id="join-modal-backdrop"
+             class="absolute inset-0 bg-black/70"
+             onclick="closeJoinModal()"></div>
+
+        {{-- Panel --}}
+        <div class="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-gray-900 p-6 shadow-xl">
+            <h2 id="join-modal-title" class="text-lg font-bold text-white mb-1">Send Join Request</h2>
+            <p id="join-modal-team" class="text-sm text-blue-400 mb-4"></p>
+
+            <form id="join-modal-form" method="POST">
+                @csrf
+                <label for="join-modal-message" class="block text-sm font-medium text-gray-300 mb-1">
+                    Message <span class="text-gray-500 font-normal">(optional)</span>
+                </label>
+                <textarea id="join-modal-message"
+                          name="message"
+                          rows="4"
+                          maxlength="1000"
+                          placeholder="Add a personal note to the team owner…"
+                          class="w-full rounded-lg border border-white/10 bg-gray-800 px-3 py-2 text-sm text-gray-100 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"></textarea>
+
+                <div class="flex justify-end gap-3 mt-4">
+                    <button type="button"
+                            onclick="closeJoinModal()"
+                            class="px-4 py-2 text-sm font-medium rounded-lg border border-white/10 text-gray-300 hover:bg-white/5 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="px-4 py-2 text-sm font-medium rounded-lg border border-blue-500/50 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:border-blue-400 transition-colors">
+                        Send Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endauth
+
     <script>
+    function openJoinModal(btn) {
+        var modal    = document.getElementById('join-modal');
+        var form     = document.getElementById('join-modal-form');
+        var label    = document.getElementById('join-modal-team');
+        var textarea = document.getElementById('join-modal-message');
+
+        form.action      = btn.getAttribute('data-join-action');
+        label.textContent = btn.getAttribute('data-join-team-name');
+        textarea.value   = '';
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        textarea.focus();
+    }
+
+    function closeJoinModal() {
+        var modal = document.getElementById('join-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !document.getElementById('join-modal').classList.contains('hidden')) {
+            closeJoinModal();
+        }
+    });
+
     (function () {
         const tabs = document.querySelectorAll('[role="tab"]');
         tabs.forEach(function (tab) {
