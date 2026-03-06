@@ -35,6 +35,8 @@ Route::middleware('auth')->group(function () {
         ->name('member.profile.update');
     Route::post('/members/{member}/sync-discord', [MemberProfileController::class, 'syncFromDiscord'])
         ->name('member.sync-discord');
+    Route::post('/hierarchy/teams/{team}/join-request', [HierarchyController::class, 'joinRequest'])
+        ->name('team.join-request');
 });
 
 Route::middleware('guest')->group(function () {

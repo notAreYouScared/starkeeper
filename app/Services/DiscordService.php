@@ -186,6 +186,33 @@ class DiscordService
     }
 
     /**
+     * Send a Direct Message to a Discord user via the bot.
+     *
+     * Creates (or retrieves) a DM channel with the recipient and posts
+     * the given message content to it.
+     */
+    public function sendDirectMessage(string $recipientDiscordId, string $message): void
+    {
+        // Step 1: open / retrieve a DM channel with the recipient
+        $channelResponse = Http::withToken($this->botToken, 'Bot')
+            ->post(self::API_BASE . '/users/@me/channels', [
+                'recipient_id' => $recipientDiscordId,
+            ]);
+
+        $channelResponse->throw();
+
+        $channelId = $channelResponse->json('id');
+
+        // Step 2: post the message to that channel
+        $messageResponse = Http::withToken($this->botToken, 'Bot')
+            ->post(self::API_BASE . "/channels/{$channelId}/messages", [
+                'content' => $message,
+            ]);
+
+        $messageResponse->throw();
+    }
+
+    /**
      * Fetch the Discord Gateway WebSocket URL for bots.
      */
     public function getGatewayUrl(): string
