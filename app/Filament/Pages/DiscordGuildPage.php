@@ -33,7 +33,7 @@ class DiscordGuildPage extends Page
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Organisation';
+        return 'Administration';
     }
 
     public static function getNavigationSort(): ?int
