@@ -55,6 +55,11 @@ class HierarchyController extends Controller
 
         $message = "<@{$user->discord_id}> has interest in joining {$team->name}";
 
+        $userMessage = trim(request('message', ''));
+        if ($userMessage !== '') {
+            $message .= "\n\n{$userMessage}";
+        }
+
         app(DiscordService::class)->sendDirectMessage($owner->discord_id, $message);
 
         return redirect()->route('hierarchy')

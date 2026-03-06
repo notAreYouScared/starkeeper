@@ -86,6 +86,20 @@ class TeamJoinRequestTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Request to Join');
+        $response->assertSee('id="join-modal"', false);
+        $response->assertSee('name="message"', false);
+    }
+
+    public function test_join_request_modal_not_rendered_for_guests(): void
+    {
+        $unit = $this->createUnit();
+        $this->createTeam($unit, ['show_join_request' => true]);
+
+        $response = $this->get(route('hierarchy'));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('id="join-modal"', false);
+        $response->assertDontSee('name="message"', false);
     }
 
     // ── Route access tests ────────────────────────────────────────────────────
@@ -180,6 +194,94 @@ class TeamJoinRequestTest extends TestCase
         $this->assertSame('111222333', $capturedRecipient);
         $this->assertStringContainsString('<@999888777>', $capturedMessage);
         $this->assertStringContainsString('Vanguard', $capturedMessage);
+    }
+
+    public function test_join_request_appends_user_message_to_dm_when_provided(): void
+    {
+        $user        = User::factory()->create(['discord_id' => '999888777']);
+        $unit        = $this->createUnit();
+        $ownerMember = $this->createMember(['discord_id' => '111222333', 'handle' => 'owner']);
+        $team        = $this->createTeam($unit, ['show_join_request' => true, 'name' => 'Vanguard', 'owner_member_id' => $ownerMember->id]);
+
+        $capturedMessage = null;
+
+        $mock = Mockery::mock(DiscordService::class);
+        $mock->shouldReceive('sendDirectMessage')
+            ->once()
+            ->withArgs(function (string $recipientId, string $message) use (&$capturedMessage) {
+                $capturedMessage = $message;
+
+                return true;
+            });
+
+        $this->app->instance(DiscordService::class, $mock);
+
+        $response = $this->actingAs($user)->post(route('team.join-request', $team), [
+            'message' => 'I would love to join, I have 5 years of experience.',
+        ]);
+
+        $response->assertRedirect(route('hierarchy'));
+        $response->assertSessionHas('join_request_success');
+
+        $this->assertStringContainsString('<@999888777>', $capturedMessage);
+        $this->assertStringContainsString('Vanguard', $capturedMessage);
+        $this->assertStringContainsString('I would love to join, I have 5 years of experience.', $capturedMessage);
+    }
+
+    public function test_join_request_sends_default_dm_when_no_message_provided(): void
+    {
+        $user        = User::factory()->create(['discord_id' => '999888777']);
+        $unit        = $this->createUnit();
+        $ownerMember = $this->createMember(['discord_id' => '111222333', 'handle' => 'owner']);
+        $team        = $this->createTeam($unit, ['show_join_request' => true, 'name' => 'Vanguard', 'owner_member_id' => $ownerMember->id]);
+
+        $capturedMessage = null;
+
+        $mock = Mockery::mock(DiscordService::class);
+        $mock->shouldReceive('sendDirectMessage')
+            ->once()
+            ->withArgs(function (string $recipientId, string $message) use (&$capturedMessage) {
+                $capturedMessage = $message;
+
+                return true;
+            });
+
+        $this->app->instance(DiscordService::class, $mock);
+
+        $response = $this->actingAs($user)->post(route('team.join-request', $team));
+
+        $response->assertRedirect(route('hierarchy'));
+        $response->assertSessionHas('join_request_success');
+
+        $this->assertSame('<@999888777> has interest in joining Vanguard', $capturedMessage);
+    }
+
+    public function test_join_request_ignores_blank_whitespace_only_message(): void
+    {
+        $user        = User::factory()->create(['discord_id' => '999888777']);
+        $unit        = $this->createUnit();
+        $ownerMember = $this->createMember(['discord_id' => '111222333', 'handle' => 'owner']);
+        $team        = $this->createTeam($unit, ['show_join_request' => true, 'name' => 'Vanguard', 'owner_member_id' => $ownerMember->id]);
+
+        $capturedMessage = null;
+
+        $mock = Mockery::mock(DiscordService::class);
+        $mock->shouldReceive('sendDirectMessage')
+            ->once()
+            ->withArgs(function (string $recipientId, string $message) use (&$capturedMessage) {
+                $capturedMessage = $message;
+
+                return true;
+            });
+
+        $this->app->instance(DiscordService::class, $mock);
+
+        $response = $this->actingAs($user)->post(route('team.join-request', $team), ['message' => '   ']);
+
+        $response->assertRedirect(route('hierarchy'));
+        $response->assertSessionHas('join_request_success');
+
+        $this->assertSame('<@999888777> has interest in joining Vanguard', $capturedMessage);
     }
 
     public function test_join_request_uses_explicit_owner_not_role_sort_order(): void
