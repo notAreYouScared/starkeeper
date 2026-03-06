@@ -145,6 +145,14 @@
                             {{ $member->orgRole->label }}
                         </span>
                     @endif
+                    <span class="mt-2 ml-2 inline-flex items-center gap-1.5 text-xs font-medium text-yellow-400 bg-yellow-400/10 px-3 py-1 rounded-full"
+                          title="Merit Points"
+                          aria-label="Merit balance: {{ $member->merits }} merits">
+                        <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        {{ $member->merits }} Merits
+                    </span>
                 </div>
             </div>
         </section>
@@ -319,6 +327,85 @@
                                 </div>
                             @endif
                         </div>
+                    @endforeach
+                </div>
+            @endif
+        </section>
+
+        {{-- ─── Rewards Store ─── --}}
+        <section>
+            <div class="flex items-center gap-3 mb-5">
+                <div class="h-8 w-1 rounded bg-yellow-400"></div>
+                <h2 class="text-xl font-bold tracking-widest uppercase text-yellow-400">Rewards Store</h2>
+                <span class="ml-auto inline-flex items-center gap-1.5 text-sm font-medium text-yellow-400 bg-yellow-400/10 px-3 py-1.5 rounded-full">
+                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    {{ $member->merits }} available
+                </span>
+            </div>
+
+            @if(session('status') && request()->routeIs('member.profile'))
+                @php $statusType = session('status_type', 'success'); @endphp
+                <div class="mb-4 rounded-lg border px-4 py-3 text-sm
+                    {{ $statusType === 'error' ? 'border-red-500/30 bg-red-500/10 text-red-300' : 'border-green-500/30 bg-green-500/10 text-green-300' }}">
+                    {{ session('status') }}
+                </div>
+            @endif
+
+            @if($rewardCategories->isEmpty())
+                <p class="text-sm text-gray-400 italic pl-4">No rewards are available yet.</p>
+            @else
+                <div class="space-y-6">
+                    @foreach($rewardCategories as $rewardCategory)
+                        @if($rewardCategory->rewards->isNotEmpty())
+                        <div>
+                            <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-3 pl-1">
+                                {{ $rewardCategory->name }}
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                @foreach($rewardCategory->rewards as $reward)
+                                    @php $canAfford = $member->merits >= $reward->merit_cost; @endphp
+                                    <div class="flex items-start justify-between gap-4 rounded-xl border {{ $canAfford ? 'border-yellow-400/20 bg-yellow-400/5' : 'border-white/10 bg-white/5' }} p-4">
+                                        <div class="min-w-0 flex-1">
+                                            <p class="font-semibold text-white text-sm">{{ $reward->name }}</p>
+                                            @if($reward->description)
+                                                <p class="text-xs text-gray-400 mt-0.5">{{ $reward->description }}</p>
+                                            @endif
+                                            <p class="mt-2 inline-flex items-center gap-1 text-xs font-medium text-yellow-400">
+                                                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                </svg>
+                                                {{ $reward->merit_cost }} merits
+                                            </p>
+                                        </div>
+                                        @if($canRedeem)
+                                            @if($canAfford)
+                                                <form method="POST" action="{{ route('member.redeem', [$member, $reward]) }}" class="shrink-0">
+                                                    @csrf
+                                                    <button type="submit"
+                                                            class="rounded-lg bg-yellow-400/20 hover:bg-yellow-400/40 px-3 py-1.5 text-xs font-medium text-yellow-300 hover:text-yellow-200 transition-colors">
+                                                        Redeem
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <div class="relative group shrink-0">
+                                                    <button type="button" disabled
+                                                            aria-label="Redeem – Missing Merits"
+                                                            class="cursor-not-allowed rounded-lg bg-white/5 px-3 py-1.5 text-xs font-medium text-gray-500">
+                                                        Redeem
+                                                    </button>
+                                                    <span class="pointer-events-none absolute right-0 bottom-full mb-2 w-max rounded bg-gray-800 border border-white/10 px-3 py-1.5 text-xs text-gray-200 opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-lg">
+                                                        Missing Merits
+                                                    </span>
+                                                </div>
+                                            @endif
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
                     @endforeach
                 </div>
             @endif
