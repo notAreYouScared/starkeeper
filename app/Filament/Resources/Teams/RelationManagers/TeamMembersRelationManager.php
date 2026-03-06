@@ -40,7 +40,8 @@ class TeamMembersRelationManager extends RelationManager
 
                         return TeamRole::where('unit_id', $team->unit_id)
                             ->orderBy('sort_order')
-                            ->pluck('label', 'id');
+                            ->get()
+                            ->mapWithKeys(fn (TeamRole $role) => [$role->id => "{$role->label} ({$role->name})"]);
                     })
                     ->required(),
 
