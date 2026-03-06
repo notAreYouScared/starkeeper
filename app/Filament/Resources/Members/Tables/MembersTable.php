@@ -38,6 +38,10 @@ class MembersTable
                     ->badge()
                     ->sortable(),
 
+                TextColumn::make('merits')
+                    ->label('Merits')
+                    ->sortable(),
+
                 TextInputColumn::make('sort_order')
                     ->label('Display Order')
                     ->width(5)

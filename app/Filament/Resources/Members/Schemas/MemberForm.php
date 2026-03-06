@@ -53,6 +53,14 @@ class MemberForm
                     ->numeric()
                     ->default(0)
                     ->helperText('Lower numbers appear first in the org hierarchy.'),
+
+                TextInput::make('merits')
+                    ->label('Merit Balance')
+                    ->numeric()
+                    ->default(0)
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->helperText('Total merits available. Manage via the Merit Awards and Redemptions tabs below.'),
             ]);
     }
 }

@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
+use App\Models\MeritRedemption;
 use App\Models\OrgRole;
+use App\Models\Reward;
+use App\Models\RewardCategory;
 use App\Models\Team;
 use App\Models\TeamMember;
 use App\Models\TeamRole;
@@ -179,6 +182,55 @@ class MemberProfileController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        return view('member-profile', compact('member', 'categories', 'ratings', 'categoryAverages', 'notesData', 'canEditName', 'isAdmin', 'teamMemberships'));
+        $canRedeem = $isAdmin
+            || ($member->discord_id && auth()->user()->discord_id === $member->discord_id);
+
+        $rewardCategories = RewardCategory::with([
+            'rewards' => function ($query) {
+                $query->orderBy('sort_order');
+            },
+        ])
+            ->orderBy('sort_order')
+            ->get();
+
+        return view('member-profile', compact(
+            'member',
+            'categories',
+            'ratings',
+            'categoryAverages',
+            'notesData',
+            'canEditName',
+            'isAdmin',
+            'teamMemberships',
+            'canRedeem',
+            'rewardCategories',
+        ));
+    }
+
+    public function redeem(Member $member, Reward $reward)
+    {
+        $user = auth()->user();
+
+        $isOwnProfile = $member->discord_id && $user->discord_id === $member->discord_id;
+        abort_unless($user->is_admin || $isOwnProfile, 403);
+
+        if ($member->merits < $reward->merit_cost) {
+            return redirect()->route('member.profile', $member)
+                ->with('status', 'Not enough merits to redeem this reward.')
+                ->with('status_type', 'error');
+        }
+
+        MeritRedemption::create([
+            'member_id'           => $member->id,
+            'reward_id'           => $reward->id,
+            'merit_cost'          => $reward->merit_cost,
+            'redeemed_by_user_id' => $user->id,
+        ]);
+
+        $member->decrement('merits', $reward->merit_cost);
+
+        return redirect()->route('member.profile', $member)
+            ->with('status', "Successfully redeemed \"{$reward->name}\" for {$reward->merit_cost} merits.")
+            ->with('status_type', 'success');
     }
 }
