@@ -174,6 +174,11 @@ class MemberProfileController extends Controller
 
         $isAdmin = auth()->user()->is_admin;
 
-        return view('member-profile', compact('member', 'categories', 'ratings', 'categoryAverages', 'notesData', 'canEditName', 'isAdmin'));
+        $teamMemberships = $member->teamMembers()
+            ->with(['team', 'teamRole'])
+            ->orderBy('sort_order')
+            ->get();
+
+        return view('member-profile', compact('member', 'categories', 'ratings', 'categoryAverages', 'notesData', 'canEditName', 'isAdmin', 'teamMemberships'));
     }
 }
