@@ -149,6 +149,42 @@
             </div>
         </section>
 
+        {{-- ─── Teams ─── --}}
+        @if($teamMemberships->isNotEmpty())
+        <section>
+            <div class="flex items-center gap-3 mb-5">
+                <div class="h-8 w-1 rounded bg-green-400"></div>
+                <h2 class="text-xl font-bold tracking-widest uppercase text-green-400">Teams</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                @foreach($teamMemberships as $membership)
+                    <div class="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4">
+                        @if($membership->team->image)
+                            <img src="{{ Storage::disk('public')->url($membership->team->image) }}"
+                                 alt="{{ $membership->team->name }}"
+                                 class="h-14 w-14 shrink-0 rounded-lg object-cover">
+                        @else
+                            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-white/10 text-gray-400">
+                                <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                                </svg>
+                            </div>
+                        @endif
+                        <div class="min-w-0">
+                            <p class="font-semibold text-white truncate">{{ $membership->team->name }}</p>
+                            @if($membership->teamRole)
+                                <p class="text-xs text-gray-400 mt-0.5">{{ $membership->teamRole->label }}</p>
+                            @endif
+                            @if($membership->title)
+                                <p class="text-xs text-gray-500 mt-0.5 italic">{{ $membership->title }}</p>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+        @endif
+
         {{-- ─── Training Tracker ─── --}}
         <section>
             <div class="flex items-center gap-3 mb-5">
