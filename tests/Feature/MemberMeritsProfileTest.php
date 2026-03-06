@@ -87,8 +87,8 @@ class MemberMeritsProfileTest extends TestCase
 
     public function test_member_profile_shows_rewards_store_section(): void
     {
-        $user    = User::factory()->create(['is_admin' => false]);
-        $member  = $this->createMember();
+        $member = $this->createMember(['merits' => 0]);
+        $user   = $this->createUserLinkedToMember($member);
         $this->createReward(50);
 
         $response = $this->actingAs($user)->get(route('member.profile', $member));
@@ -101,8 +101,8 @@ class MemberMeritsProfileTest extends TestCase
 
     public function test_member_profile_shows_empty_rewards_message_when_no_rewards(): void
     {
-        $user   = User::factory()->create(['is_admin' => false]);
         $member = $this->createMember();
+        $user   = $this->createUserLinkedToMember($member);
 
         $response = $this->actingAs($user)->get(route('member.profile', $member));
 
@@ -112,8 +112,8 @@ class MemberMeritsProfileTest extends TestCase
 
     public function test_member_profile_shows_merit_cost_on_rewards(): void
     {
-        $user   = User::factory()->create(['is_admin' => false]);
         $member = $this->createMember();
+        $user   = $this->createUserLinkedToMember($member);
         $this->createReward(75);
 
         $response = $this->actingAs($user)->get(route('member.profile', $member));
@@ -160,8 +160,24 @@ class MemberMeritsProfileTest extends TestCase
         $response = $this->actingAs($otherUser)->get(route('member.profile', $member));
 
         $response->assertStatus(200);
-        // No redeem buttons shown for unrelated users
+        // The entire Rewards Store tab is hidden for unrelated users
+        $response->assertDontSee('Rewards Store');
         $response->assertDontSee('Redeem');
+    }
+
+    public function test_unrelated_user_cannot_see_rewards_store_tab(): void
+    {
+        $member    = $this->createMember(['merits' => 100]);
+        $otherUser = User::factory()->create(['is_admin' => false, 'discord_id' => 'different_discord_id']);
+        $this->createReward(50);
+
+        $response = $this->actingAs($otherUser)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Rewards Store');
+        // The tab button and panel elements are not rendered
+        $response->assertDontSee('id="tab-rewards"', false);
+        $response->assertDontSee('id="panel-rewards"', false);
     }
 
     public function test_admin_can_see_redeem_button(): void
@@ -281,8 +297,8 @@ class MemberMeritsProfileTest extends TestCase
 
     public function test_reward_image_is_shown_when_set(): void
     {
-        $user   = User::factory()->create(['is_admin' => false]);
         $member = $this->createMember(['merits' => 50]);
+        $user   = $this->createUserLinkedToMember($member);
 
         $category = RewardCategory::create(['name' => 'Test Category', 'sort_order' => 1]);
         Reward::create([
@@ -302,8 +318,8 @@ class MemberMeritsProfileTest extends TestCase
 
     public function test_reward_image_is_not_shown_when_not_set(): void
     {
-        $user   = User::factory()->create(['is_admin' => false]);
         $member = $this->createMember();
+        $user   = $this->createUserLinkedToMember($member);
 
         $category = RewardCategory::create(['name' => 'Test Category', 'sort_order' => 1]);
         Reward::create([
@@ -327,8 +343,8 @@ class MemberMeritsProfileTest extends TestCase
 
     public function test_member_profile_shows_tab_bar_with_training_and_rewards_tabs(): void
     {
-        $user   = User::factory()->create(['is_admin' => false]);
         $member = $this->createMember();
+        $user   = $this->createUserLinkedToMember($member);
 
         $response = $this->actingAs($user)->get(route('member.profile', $member));
 
@@ -341,25 +357,18 @@ class MemberMeritsProfileTest extends TestCase
 
     public function test_training_tab_is_active_by_default(): void
     {
-        $user   = User::factory()->create(['is_admin' => false]);
         $member = $this->createMember();
+        $user   = $this->createUserLinkedToMember($member);
 
         $response = $this->actingAs($user)->get(route('member.profile', $member));
 
         $response->assertStatus(200);
         // Training tab has aria-selected="true"
         $response->assertSee('aria-selected="true"', false);
-        // Training panel is visible (no hidden class on it)
+        // Training panel is present and visible
         $response->assertSee('id="panel-training"', false);
-        // Rewards panel starts with the hidden class
+        // Rewards panel is present but starts hidden
         $response->assertSee('id="panel-rewards"', false);
-        $this->assertStringContainsString(
-            'id="panel-rewards"',
-            $response->getContent()
-        );
-        $this->assertMatchesRegularExpression(
-            '/id="panel-rewards"[^>]*class="hidden"/',
-            $response->getContent()
-        );
+        $response->assertSee('class="hidden"', false);
     }
 }

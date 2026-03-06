@@ -205,6 +205,7 @@
                         class="px-4 py-2.5 text-sm font-semibold tracking-wide transition-colors -mb-px border-b-2 text-blue-400 border-blue-400 bg-blue-400/10">
                     Training Tracker
                 </button>
+                @if($canRedeem)
                 <button type="button"
                         role="tab"
                         id="tab-rewards"
@@ -219,6 +220,7 @@
                         {{ $member->merits }}
                     </span>
                 </button>
+                @endif
             </div>
 
             {{-- ─── Training Tracker Tab ─── --}}
@@ -357,6 +359,7 @@
             </section>
 
             {{-- ─── Rewards Store Tab ─── --}}
+            @if($canRedeem)
             <section id="panel-rewards" role="tabpanel" aria-labelledby="tab-rewards" class="hidden">
 
                 @if(session('status') && request()->routeIs('member.profile'))
@@ -429,6 +432,7 @@
                     </div>
                 @endif
             </section>
+            @endif
 
         </div>{{-- end tabs --}}
 
