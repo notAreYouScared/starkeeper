@@ -12,7 +12,7 @@ class Member extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['discord_id', 'name', 'handle', 'rsi_handle', 'avatar_url', 'profile_url', 'title', 'org_role_id', 'sort_order'];
+    protected $fillable = ['discord_id', 'name', 'handle', 'rsi_handle', 'avatar_url', 'profile_url', 'title', 'org_role_id', 'sort_order', 'merits'];
 
     public function orgRole(): BelongsTo
     {
@@ -34,5 +34,15 @@ class Member extends Model
     public function trainingRatings(): HasMany
     {
         return $this->hasMany(MemberTrainingRating::class);
+    }
+
+    public function meritAwards(): HasMany
+    {
+        return $this->hasMany(MeritAward::class);
+    }
+
+    public function meritRedemptions(): HasMany
+    {
+        return $this->hasMany(MeritRedemption::class);
     }
 }
