@@ -112,6 +112,17 @@
                         </div>
                     @endif
                     <div class="mt-1.5 flex items-center gap-2">
+                        <span class="mt-0.5 ml-2 inline-flex items-center gap-1.5 text-sm font-medium text-yellow-400 bg-yellow-400/10 px-3 py-1 rounded-full"
+                              title="Merit Points"
+                              aria-label="Merit balance: {{ $member->merits }} merits">
+                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M9 3h6l3 7l-6 2l-6 -2l3 -7" />
+                            <path d="M12 12l-3 -9" />
+                            <path d="M15 11l-3 -8" />
+                            <path d="M12 19.5l-3 1.5l.5 -3.5l-2 -2l3 -.5l1.5 -3l1.5 3l3 .5l-2 2l.5 3.5l-3 -1.5" />
+                        </svg>
+                        {{ $member->merits }} Merits
+                    </span>
                         @if($member->profile_url)
                             <a href="{{ $member->profile_url }}"
                                target="_blank" rel="noopener noreferrer"
@@ -145,17 +156,6 @@
                             {{ $member->orgRole->label }}
                         </span>
                     @endif
-                    <span class="mt-2 ml-2 inline-flex items-center gap-1.5 text-xs font-medium text-yellow-400 bg-yellow-400/10 px-3 py-1 rounded-full"
-                          title="Merit Points"
-                          aria-label="Merit balance: {{ $member->merits }} merits">
-                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M9 3h6l3 7l-6 2l-6 -2l3 -7" />
-                            <path d="M12 12l-3 -9" />
-                            <path d="M15 11l-3 -8" />
-                            <path d="M12 19.5l-3 1.5l.5 -3.5l-2 -2l3 -.5l1.5 -3l1.5 3l3 .5l-2 2l.5 3.5l-3 -1.5" />
-                        </svg>
-                        {{ $member->merits }} Merits
-                    </span>
                 </div>
             </div>
         </section>
@@ -217,7 +217,7 @@
                         class="px-4 py-2.5 text-sm font-semibold tracking-wide transition-colors -mb-px border-b-2 text-gray-400 border-transparent">
                     Rewards Store
                     <span class="ml-1.5 inline-flex items-center gap-0.5 text-xs font-medium text-yellow-400 bg-yellow-400/10 px-2 py-0.5 rounded-full">
-                        <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M9 3h6l3 7l-6 2l-6 -2l3 -7" />
                             <path d="M12 12l-3 -9" />
                             <path d="M15 11l-3 -8" />
@@ -400,15 +400,6 @@
                                                 @if($reward->description)
                                                     <p class="text-xs text-gray-400 mt-0.5">{{ $reward->description }}</p>
                                                 @endif
-                                                <p class="mt-2 inline-flex items-center gap-1 text-xs font-medium text-yellow-400">
-                                                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                                        <path d="M9 3h6l3 7l-6 2l-6 -2l3 -7" />
-                                                        <path d="M12 12l-3 -9" />
-                                                        <path d="M15 11l-3 -8" />
-                                                        <path d="M12 19.5l-3 1.5l.5 -3.5l-2 -2l3 -.5l1.5 -3l1.5 3l3 .5l-2 2l.5 3.5l-3 -1.5" />
-                                                    </svg>
-                                                    {{ $reward->merit_cost }} merits
-                                                </p>
                                             </div>
                                             @if($canRedeem)
                                                 @if($canAfford)
@@ -416,7 +407,7 @@
                                                         @csrf
                                                         <button type="submit"
                                                                 class="rounded-lg bg-yellow-400/20 hover:bg-yellow-400/40 px-3 py-1.5 text-xs font-medium text-yellow-300 hover:text-yellow-200 transition-colors">
-                                                            Redeem
+                                                            Redeem {{$reward->merit_cost}} merits
                                                         </button>
                                                     </form>
                                                 @else
@@ -424,7 +415,7 @@
                                                         <button type="button" disabled
                                                                 aria-label="Redeem – Missing Merits"
                                                                 class="cursor-not-allowed rounded-lg bg-white/5 px-3 py-1.5 text-xs font-medium text-gray-500">
-                                                            Redeem
+                                                            Redeem {{$reward->merit_cost}} merits
                                                         </button>
                                                         <span class="pointer-events-none absolute right-0 bottom-full mb-2 w-max rounded bg-gray-800 border border-white/10 px-3 py-1.5 text-xs text-gray-200 opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-lg">
                                                             Missing Merits
