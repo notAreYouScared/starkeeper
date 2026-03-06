@@ -12,6 +12,18 @@
 
     <main class="mx-auto max-w-5xl px-4 py-10">
 
+        @if(session('join_request_success'))
+            <div class="mb-6 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-400">
+                {{ session('join_request_success') }}
+            </div>
+        @endif
+
+        @if(session('join_request_error'))
+            <div class="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                {{ session('join_request_error') }}
+            </div>
+        @endif
+
         {{-- ─────────────────────── TABS ─────────────────────── --}}
         <div class="flex gap-1 border-b border-white/10 mb-8" role="tablist" aria-label="Hierarchy sections">
             <button id="tab-org-roles"
@@ -143,9 +155,20 @@
                                             <div class="flex items-center justify-between">
                                                 <h4 class="font-semibold text-white">{{ $team->name }}</h4>
                                                 @auth
-                                                <span class="text-xs text-gray-500 ml-2 shrink-0">
-                                                    {{ $team->teamMembers->count() }} {{ str()->plural('member', $team->teamMembers->count()) }}
-                                                </span>
+                                                <div class="flex items-center gap-2 shrink-0 ml-2">
+                                                    @if($team->show_join_request)
+                                                        <form method="POST" action="{{ route('team.join-request', $team) }}">
+                                                            @csrf
+                                                            <button type="submit"
+                                                                    class="text-xs font-medium px-2.5 py-1 rounded-lg border border-blue-500/50 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:border-blue-400 transition-colors">
+                                                                Request to Join
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                    <span class="text-xs text-gray-500">
+                                                        {{ $team->teamMembers->count() }} {{ str()->plural('member', $team->teamMembers->count()) }}
+                                                    </span>
+                                                </div>
                                                 @endauth
                                             </div>
                                             @if($team->description)

@@ -6,6 +6,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class TeamForm
@@ -50,6 +51,11 @@ class TeamForm
                     ->placeholder('Discord snowflake ID')
                     ->nullable()
                     ->maxLength(255),
+
+                Toggle::make('show_join_request')
+                    ->label('Show "Request to Join" Button')
+                    ->helperText('When enabled, a "Request to Join" button will be shown on this team\'s card in the Hierarchy page.')
+                    ->default(false),
             ]);
     }
 }

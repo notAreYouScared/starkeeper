@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Member;
 use App\Models\OrgRole;
+use App\Models\Team;
 use App\Models\Unit;
+use App\Services\DiscordService;
 
 class HierarchyController extends Controller
 {
@@ -34,5 +36,33 @@ class HierarchyController extends Controller
             ->get();
 
         return view('hierarchy', compact('membersByRole', 'units'));
+    }
+
+    public function joinRequest(Team $team)
+    {
+        abort_unless($team->show_join_request, 403);
+
+        $user = auth()->user();
+
+        abort_unless($user->discord_id, 422, 'Your account has no Discord ID linked.');
+
+        // Find the team owner: the member with the lowest-sort-order team role
+        $teamLeader = $team->teamMembers()
+            ->with(['member', 'teamRole'])
+            ->get()
+            ->sortBy(fn ($tm) => [$tm->teamRole?->sort_order ?? 9999, $tm->sort_order ?? 0])
+            ->first();
+
+        if (! $teamLeader || ! $teamLeader->member?->discord_id) {
+            return redirect()->route('hierarchy')
+                ->with('join_request_error', 'Unable to send request: no team owner with a linked Discord account was found.');
+        }
+
+        $message = "<@{$user->discord_id}> has interest in joining {$team->name}";
+
+        app(DiscordService::class)->sendDirectMessage($teamLeader->member->discord_id, $message);
+
+        return redirect()->route('hierarchy')
+            ->with('join_request_success', "Your request to join {$team->name} has been sent.");
     }
 }

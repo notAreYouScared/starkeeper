@@ -12,7 +12,14 @@ class Team extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['unit_id', 'name', 'description', 'image', 'sort_order', 'discord_role_id'];
+    protected $fillable = ['unit_id', 'name', 'description', 'image', 'sort_order', 'discord_role_id', 'show_join_request'];
+
+    protected function casts(): array
+    {
+        return [
+            'show_join_request' => 'boolean',
+        ];
+    }
 
     public function unit(): BelongsTo
     {
