@@ -7,10 +7,12 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Table;
@@ -36,6 +38,15 @@ class RewardsRelationManager extends RelationManager
                     ->rows(3)
                     ->maxLength(1000),
 
+                FileUpload::make('image')
+                    ->label('Image')
+                    ->image()
+                    ->disk('public')
+                    ->directory('reward-images')
+                    ->imagePreviewHeight('80')
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'])
+                    ->nullable(),
+
                 TextInput::make('merit_cost')
                     ->label('Merit Cost')
                     ->numeric()
@@ -55,6 +66,13 @@ class RewardsRelationManager extends RelationManager
     {
         return $table
             ->columns([
+                ImageColumn::make('image')
+                    ->label('')
+                    ->disk('public')
+                    ->size(40)
+                    ->defaultImageUrl(null)
+                    ->extraImgAttributes(['class' => 'rounded']),
+
                 TextColumn::make('name')
                     ->label('Reward Name')
                     ->searchable(),

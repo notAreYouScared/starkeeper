@@ -11,7 +11,7 @@ class Reward extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['reward_category_id', 'name', 'description', 'merit_cost', 'sort_order'];
+    protected $fillable = ['reward_category_id', 'name', 'description', 'image', 'merit_cost', 'sort_order'];
 
     public function category(): BelongsTo
     {

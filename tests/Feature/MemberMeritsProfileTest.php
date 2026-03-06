@@ -274,4 +274,92 @@ class MemberMeritsProfileTest extends TestCase
         $response->assertSessionHas('status_type', 'success');
         $response->assertSessionHas('status');
     }
+
+    // -----------------------------------------------------------------------
+    // Reward image
+    // -----------------------------------------------------------------------
+
+    public function test_reward_image_is_shown_when_set(): void
+    {
+        $user   = User::factory()->create(['is_admin' => false]);
+        $member = $this->createMember(['merits' => 50]);
+
+        $category = RewardCategory::create(['name' => 'Test Category', 'sort_order' => 1]);
+        Reward::create([
+            'reward_category_id' => $category->id,
+            'name'               => 'Fancy Reward',
+            'merit_cost'         => 50,
+            'sort_order'         => 1,
+            'image'              => 'reward-images/fancy.png',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('reward-images/fancy.png', false);
+        $response->assertSee('Fancy Reward');
+    }
+
+    public function test_reward_image_is_not_shown_when_not_set(): void
+    {
+        $user   = User::factory()->create(['is_admin' => false]);
+        $member = $this->createMember();
+
+        $category = RewardCategory::create(['name' => 'Test Category', 'sort_order' => 1]);
+        Reward::create([
+            'reward_category_id' => $category->id,
+            'name'               => 'Plain Reward',
+            'merit_cost'         => 50,
+            'sort_order'         => 1,
+            'image'              => null,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('Plain Reward');
+        $response->assertDontSee('reward-images/', false);
+    }
+
+    // -----------------------------------------------------------------------
+    // Tab structure
+    // -----------------------------------------------------------------------
+
+    public function test_member_profile_shows_tab_bar_with_training_and_rewards_tabs(): void
+    {
+        $user   = User::factory()->create(['is_admin' => false]);
+        $member = $this->createMember();
+
+        $response = $this->actingAs($user)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        $response->assertSee('role="tab"', false);
+        $response->assertSee('Training Tracker');
+        $response->assertSee('Rewards Store');
+        $response->assertSee('role="tabpanel"', false);
+    }
+
+    public function test_training_tab_is_active_by_default(): void
+    {
+        $user   = User::factory()->create(['is_admin' => false]);
+        $member = $this->createMember();
+
+        $response = $this->actingAs($user)->get(route('member.profile', $member));
+
+        $response->assertStatus(200);
+        // Training tab has aria-selected="true"
+        $response->assertSee('aria-selected="true"', false);
+        // Training panel is visible (no hidden class on it)
+        $response->assertSee('id="panel-training"', false);
+        // Rewards panel starts with the hidden class
+        $response->assertSee('id="panel-rewards"', false);
+        $this->assertStringContainsString(
+            'id="panel-rewards"',
+            $response->getContent()
+        );
+        $this->assertMatchesRegularExpression(
+            '/id="panel-rewards"[^>]*class="hidden"/',
+            $response->getContent()
+        );
+    }
 }
