@@ -46,11 +46,12 @@ class HierarchyController extends Controller
 
         abort_unless($user->discord_id, 422, 'Your account has no Discord ID linked.');
 
-        // Find the team owner: the member with the lowest-sort-order team role
+        // Find the team owner: the member with the lowest-sort-order team role.
+        // PHP_INT_MAX is used so that team members without a role are sorted last.
         $teamLeader = $team->teamMembers()
             ->with(['member', 'teamRole'])
             ->get()
-            ->sortBy(fn ($tm) => [$tm->teamRole?->sort_order ?? 9999, $tm->sort_order ?? 0])
+            ->sortBy(fn ($tm) => [$tm->teamRole?->sort_order ?? PHP_INT_MAX, $tm->sort_order ?? 0])
             ->first();
 
         if (! $teamLeader || ! $teamLeader->member?->discord_id) {
